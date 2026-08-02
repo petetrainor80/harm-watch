@@ -518,12 +518,21 @@ export function SubmissionForm({ categories, descriptors }: Props) {
           </div>
 
           {/* Turnstile */}
-          <div>
+          <div className="space-y-2">
+            <p className="text-base font-semibold">Security check</p>
+            <p className="text-sm text-muted-foreground">
+              Tick the box below to confirm you are not a bot.
+            </p>
             <Turnstile
               siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
               onSuccess={setTurnstileToken}
               onExpire={() => setTurnstileToken(null)}
             />
+            {submitError === "Please complete the security check." && (
+              <p className="text-sm text-destructive" role="alert">
+                {submitError}
+              </p>
+            )}
           </div>
 
           {/* Consent */}

@@ -7,8 +7,9 @@ const CSP = [
   // Next.js injects inline bootstrap scripts at runtime (hydration, routing).
   // 'unsafe-inline' is required until nonce-based CSP is wired through middleware.
   // In dev, React also needs 'unsafe-eval' for stack trace reconstruction.
+  // Cloudflare Turnstile injects its widget script from challenges.cloudflare.com.
   // PRD-Q: implement per-request nonces via proxy.ts to tighten this.
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
   // Tailwind v4 generates a static CSS file in production; no inline styles needed.
   "style-src 'self'",
   "img-src 'self' data:",
