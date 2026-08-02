@@ -1,17 +1,41 @@
-export default function Home() {
+import { SubmissionForm } from "@/components/submission-form";
+import { createServiceClient } from "@/lib/supabase/service";
+
+async function getTags() {
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from("tags")
+    .select("slug, label, kind, is_blocked, redirect_url, redirect_copy")
+    .eq("is_active", true)
+    .order("label");
+
+  if (error || !data) return { categories: [], descriptors: [] };
+
+  return {
+    categories: data.filter((t) => t.kind === "category"),
+    descriptors: data.filter((t) => t.kind === "descriptor"),
+  };
+}
+
+export default async function Home() {
+  const { categories, descriptors } = await getTags();
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center px-6">
-      <div className="max-w-lg w-full space-y-6 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-          The Harm Watch
-        </h1>
-        <p className="text-muted-foreground text-base leading-7">
-          A public reporting service for websites that may breach the Online
-          Safety Act 2023. Opening soon.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          harm.watch
-        </p>
+    <main className="min-h-screen px-6 py-12">
+      <div className="max-w-2xl mx-auto space-y-10">
+        <header className="space-y-3">
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Report harmful content
+          </h1>
+          <p className="text-muted-foreground text-base leading-7">
+            Use this form to report a website you believe breaches the Online
+            Safety Act 2023. Reports are logged and made available to approved
+            organisations. Do not use this form to report an emergency — call
+            999.
+          </p>
+        </header>
+
+        <SubmissionForm categories={categories} descriptors={descriptors} />
       </div>
     </main>
   );

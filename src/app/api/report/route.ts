@@ -1,9 +1,22 @@
 import { NextResponse } from "next/server";
+import { createHash } from "crypto";
 import { reportSchema } from "@/lib/schemas/report";
 import {
   checkForBlockedCategories,
   recordBlockedRoutingEvent,
 } from "@/lib/blocked-categories";
+import { verifyTurnstileToken } from "@/lib/turnstile";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { normaliseUrl, hashIp } from "@/lib/url";
+import { createServiceClient } from "@/lib/supabase/service";
+
+function getIp(request: Request): string {
+  return (
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown"
+  );
+}
 
 export async function POST(request: Request) {
   // Parse body
@@ -34,20 +47,15 @@ export async function POST(request: Request) {
 
   const { data } = parsed;
 
-  // Honeypot — return a fake success so bots get no signal
+  // Honeypot — silent fake success, no DB writes
   if (data.company_url) {
     return NextResponse.json({ success: true });
   }
 
-  // ── Blocked category check ────────────────────────────────────────────────
-  // Enforced here on the server regardless of what the client sent.
-  // Data-driven from tags.is_blocked. See PRD section 5.
+  // Blocked category check — server-side enforcement regardless of client state
   const blockResult = await checkForBlockedCategories(data.categories);
-
   if (blockResult.blocked) {
-    // Record counter only — no URL, no IP, no payload
     await recordBlockedRoutingEvent(blockResult.slug);
-
     return NextResponse.json(
       {
         error: {
@@ -62,11 +70,90 @@ export async function POST(request: Request) {
     );
   }
 
-  // M3: Verify Cloudflare Turnstile token
-  // M3: Rate limit on ip_hash (5/hour, 20/day)
-  // M3: Normalise URL, compute url_hash
-  // M3: Upsert submission, insert report, insert report_tags, insert tag_suggestion
-  // M3: Return minimal success (no submission ID, no report count)
+  // Turnstile verification — fail closed
+  const ip = getIp(request);
+  const turnstileValid = await verifyTurnstileToken(data.turnstile_token, ip);
+  if (!turnstileValid) {
+    return NextResponse.json(
+      { error: { code: "bot_protection_failed", message: "Security check failed. Please try again." } },
+      { status: 403 }
+    );
+  }
 
+  // Rate limit: 5/hour, 20/day per hashed IP
+  const ipHash = hashIp(ip);
+  const rateLimit = await checkRateLimit(ipHash);
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      {
+        error: {
+          code: "rate_limited",
+          message:
+            "You have submitted too many reports recently. Please try again later.",
+        },
+      },
+      {
+        status: 429,
+        headers: rateLimit.retryAfter
+          ? { "Retry-After": String(rateLimit.retryAfter) }
+          : {},
+      }
+    );
+  }
+
+  // Normalise the URL
+  let urlResult: ReturnType<typeof normaliseUrl>;
+  try {
+    urlResult = normaliseUrl(data.url);
+  } catch (err) {
+    return NextResponse.json(
+      {
+        error: {
+          code: "invalid_url",
+          message: err instanceof Error ? err.message : "Invalid URL",
+        },
+      },
+      { status: 422 }
+    );
+  }
+
+  // Hash user agent (non-reversible, for deduplication only)
+  const userAgentHash = data.turnstile_token
+    ? createHash("sha256")
+        .update(request.headers.get("user-agent") ?? "")
+        .digest("hex")
+    : null;
+
+  const countryCode =
+    request.headers.get("cf-ipcountry") ??
+    request.headers.get("x-vercel-ip-country") ??
+    null;
+
+  // Atomic submission upsert + report insert via stored procedure
+  const supabase = createServiceClient();
+  const { error } = await supabase.rpc("create_report", {
+    p_url_original: data.url,
+    p_url_normalised: urlResult.normalised,
+    p_url_hash: urlResult.hash,
+    p_domain: urlResult.domain,
+    p_category_slugs: data.categories,
+    p_descriptor_slugs: data.descriptors ?? [],
+    p_context: data.context ?? null,
+    p_reporter_email: data.reporter_email ?? null,
+    p_ip_hash: ipHash,
+    p_country_code: countryCode,
+    p_user_agent_hash: userAgentHash,
+    p_suggested_tag: data.suggested_tag ?? null,
+  });
+
+  if (error) {
+    console.error("create_report error", { code: error.code });
+    return NextResponse.json(
+      { error: { code: "server_error", message: "Something went wrong. Please try again." } },
+      { status: 500 }
+    );
+  }
+
+  // 202 Accepted — minimal response, no submission ID or report count
   return NextResponse.json({ success: true }, { status: 202 });
 }
