@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
+import { Info, Eye } from "lucide-react";
 
 const TRACKING_PARAMS = new Set([
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
@@ -261,8 +262,12 @@ export function SubmissionForm({ categories, descriptors }: Props) {
           <div className="w-full max-w-xl space-y-8">
             {/* Wordmark */}
             <div className="space-y-1 text-center">
-              <h1 className="text-4xl font-bold tracking-tight">Harm Watch</h1>
-              <p className="text-base text-muted-foreground leading-7 max-w-md mx-auto">
+              <h1 className="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
+                <Info className="size-8 shrink-0" strokeWidth={2.5} />
+                Harm Watch
+                <Eye className="size-8 shrink-0" strokeWidth={2.5} />
+              </h1>
+              <p className="text-base text-muted-foreground leading-7">
                 Use Harm Watch to report a website, forum or service you believe
                 breaches the Online Safety Act 2023. Reports are securely logged
                 and made available to approved organisations. Do not use this
@@ -538,8 +543,10 @@ export function SubmissionForm({ categories, descriptors }: Props) {
 function SiteHeader() {
   return (
     <header className="border-b px-6 py-4">
-      <a href="/" className="font-bold text-lg tracking-tight hover:text-primary transition-colors">
+      <a href="/" className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5">
+        <Info className="size-5 shrink-0" strokeWidth={2.5} />
         Harm Watch
+        <Eye className="size-5 shrink-0" strokeWidth={2.5} />
       </a>
     </header>
   );
@@ -548,7 +555,7 @@ function SiteHeader() {
 function SiteFooter() {
   return (
     <footer className="border-t px-6 py-6 mt-auto">
-      <div className="max-w-2xl mx-auto flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
+      <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-muted-foreground text-center">
         <span>© Harm Watch</span>
         <a href="/privacy" className="hover:text-foreground underline underline-offset-4">Privacy notice</a>
         <a href="/terms" className="hover:text-foreground underline underline-offset-4">Terms of use</a>
