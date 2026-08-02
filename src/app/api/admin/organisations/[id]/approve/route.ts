@@ -83,7 +83,10 @@ export async function POST(
   }
 
   const newUserId = linkData.user.id;
-  const inviteLink = linkData.properties.action_link;
+  // Use token_hash-based URL (verifyOtp server-side) instead of action_link.
+  // action_link goes through Supabase's server and redirects with URL hash fragments
+  // which Route Handlers cannot read. /auth/confirm reads token_hash via verifyOtp.
+  const inviteLink = `${appUrl}/auth/confirm?token_hash=${linkData.properties.hashed_token}&type=invite`;
 
   // Create the profile row.
   const { error: profileErr } = await service.from("profiles").insert({

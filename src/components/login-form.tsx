@@ -17,8 +17,10 @@ export function LoginForm({ next }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mode, setMode] = useState<"password" | "magic">("password");
+  const [magicSent, setMagicSent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -32,12 +34,90 @@ export function LoginForm({ next }: Props) {
       return;
     }
 
-    // Let the proxy decide where to send them based on role; fall back to next or /.
     window.location.href = next ?? "/admin";
   };
 
+  const handleMagicSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const supabase = createClient();
+    const redirectTo = `${window.location.origin}/auth/callback${next ? `?next=${encodeURIComponent(next)}` : ""}`;
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: redirectTo },
+    });
+
+    if (error) {
+      setError("Could not send the link. Please check the email address and try again.");
+    } else {
+      setMagicSent(true);
+    }
+    setLoading(false);
+  };
+
+  if (magicSent) {
+    return (
+      <div className="space-y-4">
+        <p className="text-base leading-7">
+          Check your email. We&apos;ve sent a sign-in link to{" "}
+          <span className="font-medium">{email}</span>.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          The link expires after one hour. If it does not arrive, check your spam folder.
+        </p>
+        <button
+          type="button"
+          onClick={() => { setMagicSent(false); setEmail(""); }}
+          className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground"
+        >
+          Use a different email
+        </button>
+      </div>
+    );
+  }
+
+  if (mode === "magic") {
+    return (
+      <form onSubmit={handleMagicSubmit} className="space-y-6">
+        <div className="space-y-2">
+          <Label htmlFor="email-magic">Email address</Label>
+          <input
+            id="email-magic"
+            type="email"
+            required
+            autoComplete="email"
+            placeholder="you@organisation.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={INPUT_CLS}
+          />
+        </div>
+
+        {error && (
+          <p className="text-sm text-destructive" role="alert">
+            {error}
+          </p>
+        )}
+
+        <Button type="submit" disabled={loading} className="w-full">
+          {loading ? "Sending…" : "Send sign-in link"}
+        </Button>
+
+        <button
+          type="button"
+          onClick={() => { setMode("password"); setError(null); }}
+          className="w-full text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+        >
+          Sign in with password instead
+        </button>
+      </form>
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handlePasswordSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="email">Email address</Label>
         <input
@@ -74,6 +154,14 @@ export function LoginForm({ next }: Props) {
       <Button type="submit" disabled={loading} className="w-full">
         {loading ? "Signing in…" : "Sign in"}
       </Button>
+
+      <button
+        type="button"
+        onClick={() => { setMode("magic"); setError(null); }}
+        className="w-full text-sm text-muted-foreground underline underline-offset-4 hover:text-foreground"
+      >
+        Send me a sign-in link instead
+      </button>
     </form>
   );
 }
