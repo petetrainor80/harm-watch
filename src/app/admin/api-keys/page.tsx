@@ -1,19 +1,33 @@
 import { createClient } from "@/lib/supabase/server";
+import { IssueKeyForm } from "@/components/admin/issue-key-form";
+import { RevokeKeyButton } from "@/components/org/revoke-key-button";
+
+export const dynamic = "force-dynamic";
 
 export default async function ApiKeysPage() {
   const supabase = await createClient();
 
-  const { data: keys } = await supabase
-    .from("api_keys")
-    .select(
-      `id, label, key_prefix, scopes, rate_limit_per_hour,
-       last_used_at, revoked_at, created_at,
-       organisations(id, name, api_enabled)`
-    )
-    .order("created_at", { ascending: false });
+  const [keysResult, orgsResult] = await Promise.all([
+    supabase
+      .from("api_keys")
+      .select(
+        `id, label, key_prefix, scopes, rate_limit_per_hour,
+         last_used_at, revoked_at, created_at,
+         organisations(id, name, api_enabled)`
+      )
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("organisations")
+      .select("id, name")
+      .eq("status", "approved")
+      .order("name", { ascending: true }),
+  ]);
 
-  const activeKeys = (keys ?? []).filter((k) => !k.revoked_at);
-  const revokedKeys = (keys ?? []).filter((k) => k.revoked_at);
+  const keys = keysResult.data ?? [];
+  const orgs = orgsResult.data ?? [];
+
+  const activeKeys = keys.filter((k) => !k.revoked_at);
+  const revokedKeys = keys.filter((k) => k.revoked_at);
 
   return (
     <div className="space-y-10 max-w-3xl">
@@ -32,21 +46,27 @@ export default async function ApiKeysPage() {
             {activeKeys.map((k) => {
               const org = k.organisations as unknown as { id: string; name: string; api_enabled: boolean } | null;
               return (
-                <div key={k.id} className="px-4 py-3 space-y-1">
+                <div key={k.id} className="px-4 py-3">
                   <div className="flex items-center justify-between gap-4">
-                    <div className="space-y-0.5">
-                      <p className="font-medium">{k.label ?? org?.name ?? "—"}</p>
+                    <div className="space-y-0.5 min-w-0">
+                      <p className="font-medium truncate">{k.label ?? org?.name ?? "—"}</p>
                       <p className="font-mono text-xs text-muted-foreground">
                         {k.key_prefix}…
                       </p>
-                    </div>
-                    <div className="text-xs text-muted-foreground text-right space-y-0.5 shrink-0">
-                      {k.last_used_at ? (
-                        <p>Last used {new Date(k.last_used_at).toLocaleDateString("en-GB")}</p>
-                      ) : (
-                        <p>Never used</p>
+                      {org && (
+                        <p className="text-xs text-muted-foreground">{org.name}</p>
                       )}
-                      <p>{k.rate_limit_per_hour} req/hr</p>
+                    </div>
+                    <div className="flex items-center gap-4 shrink-0">
+                      <div className="text-xs text-muted-foreground text-right space-y-0.5">
+                        {k.last_used_at ? (
+                          <p>Last used {new Date(k.last_used_at).toLocaleDateString("en-GB")}</p>
+                        ) : (
+                          <p>Never used</p>
+                        )}
+                        <p>{k.rate_limit_per_hour} req/hr</p>
+                      </div>
+                      <RevokeKeyButton keyId={k.id} endpoint="/api/admin/api-keys" />
                     </div>
                   </div>
                 </div>
@@ -83,9 +103,10 @@ export default async function ApiKeysPage() {
         </section>
       )}
 
-      <p className="text-xs text-muted-foreground">
-        Key issuance UI coming in M6 (Organisation portal and API milestone).
-      </p>
+      <section className="space-y-4">
+        <h2 className="text-base font-medium">Issue a new key</h2>
+        <IssueKeyForm orgs={orgs as { id: string; name: string }[]} />
+      </section>
     </div>
   );
 }
