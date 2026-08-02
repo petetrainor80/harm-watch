@@ -90,17 +90,22 @@ export function SubmissionForm({ categories, descriptors }: Props) {
 
   const handleUrlContinue = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url.trim()) {
-      setUrlError("Enter the full web address, including https://");
+    const trimmed = url.trim();
+    if (!trimmed) {
+      setUrlError("Enter a web address");
       return;
     }
+    // Be forgiving: add https:// if the user omitted the scheme
+    const withScheme =
+      /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
     try {
-      const normalised = previewNormalisedUrl(url);
+      const normalised = previewNormalisedUrl(withScheme);
+      setUrl(withScheme);
       setNormalisedPreview(normalised);
       setUrlError(null);
       setState({ phase: "form" });
     } catch (err) {
-      setUrlError(err instanceof Error ? err.message : "Enter a valid URL");
+      setUrlError(err instanceof Error ? err.message : "Enter a valid web address");
     }
   };
 
@@ -265,14 +270,6 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               </p>
             </div>
 
-            {/* Emergency notice */}
-            <div className="border-l-4 border-destructive bg-destructive/5 pl-4 py-2">
-              <p className="text-sm font-medium">
-                If there is immediate risk to life, call{" "}
-                <strong className="text-destructive">999</strong>.
-              </p>
-            </div>
-
             {/* URL entry */}
             <form onSubmit={handleUrlContinue} className="space-y-4" noValidate>
               <div className="space-y-2">
@@ -285,7 +282,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                   required
                   autoComplete="url"
                   spellCheck={false}
-                  placeholder="https://example.com"
+                  placeholder="example.com"
                   value={url}
                   onChange={(e) => { setUrl(e.target.value); setUrlError(null); }}
                   className={`${INPUT_CLS} h-14 text-lg`}
