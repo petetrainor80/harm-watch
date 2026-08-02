@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
-import { Info, Eye } from "lucide-react";
 import Link from "next/link";
+import { Info, Eye } from "lucide-react";
+import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 const TRACKING_PARAMS = new Set([
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
@@ -578,28 +579,3 @@ export function SubmissionForm({ categories, descriptors }: Props) {
   );
 }
 
-function SiteHeader() {
-  return (
-    <header className="border-b px-6 py-4">
-      <Link href="/" className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5">
-        <Info className="size-5 shrink-0" strokeWidth={2.5} />
-        Harm Watch
-        <Eye className="size-5 shrink-0" strokeWidth={2.5} />
-      </Link>
-    </header>
-  );
-}
-
-function SiteFooter() {
-  return (
-    <footer className="border-t px-6 py-6 mt-auto">
-      <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-muted-foreground text-center">
-        <span>© Harm Watch</span>
-        <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">Privacy notice</Link>
-        <Link href="/terms" className="hover:text-foreground underline underline-offset-4">Terms of use</Link>
-        <Link href="/about" className="hover:text-foreground underline underline-offset-4">About</Link>
-        <Link href="/request-access" className="hover:text-foreground underline underline-offset-4">Organisation access</Link>
-      </div>
-    </footer>
-  );
-}

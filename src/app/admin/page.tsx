@@ -1,6 +1,15 @@
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
+interface SubmissionTagRow {
+  tags: { slug: string; label: string; kind: string } | null;
+}
+
+interface SubmissionRow {
+  id: string;
+  submission_tags: SubmissionTagRow[];
+}
+
 async function getDashboardData() {
   const supabase = await createClient();
   const oneDayAgo = new Date(Date.now() - 86_400_000).toISOString();
@@ -17,6 +26,7 @@ async function getDashboardData() {
     pendingOrgsRes,
     pendingSuggestionsRes,
     recentRes,
+    categoriesRes,
   ] = await Promise.all([
     supabase.from("submissions").select("*", { count: "exact", head: true }).eq("status", "live"),
     supabase.from("submissions").select("*", { count: "exact", head: true }).eq("status", "pending_review"),
@@ -32,7 +42,26 @@ async function getDashboardData() {
       .select("id, domain, url_normalised, report_count, status, last_reported_at")
       .order("report_count", { ascending: false })
       .limit(5),
+    supabase
+      .from("submissions")
+      .select("id, submission_tags(tags(slug, label, kind))")
+      .limit(600),
   ]);
+
+  // Group live submissions by category for the chart.
+  const categoryMap = new Map<string, { label: string; count: number }>();
+  for (const s of (categoriesRes.data ?? []) as unknown as SubmissionRow[]) {
+    for (const st of s.submission_tags) {
+      if (st.tags?.kind !== "category") continue;
+      const slug = st.tags.slug;
+      if (!categoryMap.has(slug)) categoryMap.set(slug, { label: st.tags.label, count: 0 });
+      categoryMap.get(slug)!.count++;
+    }
+  }
+  const categoryChart = [...categoryMap.entries()]
+    .map(([slug, { label, count }]) => ({ slug, label, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 14);
 
   return {
     statusCounts: {
@@ -47,6 +76,7 @@ async function getDashboardData() {
     pendingOrgs: pendingOrgsRes.count ?? 0,
     pendingSuggestions: pendingSuggestionsRes.count ?? 0,
     topReported: recentRes.data ?? [],
+    categoryChart,
   };
 }
 
@@ -111,6 +141,46 @@ export default async function AdminDashboard() {
           </div>
         </section>
       )}
+
+      {data.categoryChart.length > 0 && (
+        <section className="space-y-4 border rounded-md p-5">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+            Submissions by category
+          </h2>
+          <CategoryBarChart data={data.categoryChart} />
+        </section>
+      )}
+    </div>
+  );
+}
+
+function CategoryBarChart({ data }: { data: { slug: string; label: string; count: number }[] }) {
+  const max = Math.max(...data.map((d) => d.count), 1);
+  return (
+    <div className="space-y-2.5">
+      {data.map(({ slug, label, count }) => (
+        <Link
+          key={slug}
+          href={`/admin/submissions?view=grouped`}
+          className="flex items-center gap-3 text-sm group"
+        >
+          <span
+            className="w-44 shrink-0 text-xs text-right text-muted-foreground truncate group-hover:text-foreground transition-colors"
+            title={label}
+          >
+            {label}
+          </span>
+          <div className="flex-1 bg-secondary rounded h-5 overflow-hidden">
+            <div
+              className="h-full bg-primary rounded transition-all duration-300"
+              style={{ width: `${Math.max(2, (count / max) * 100)}%` }}
+            />
+          </div>
+          <span className="w-8 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
+            {count}
+          </span>
+        </Link>
+      ))}
     </div>
   );
 }
