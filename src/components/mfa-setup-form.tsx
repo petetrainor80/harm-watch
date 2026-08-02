@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
@@ -92,12 +91,13 @@ export function MfaSetupForm() {
 
         {qrCode ? (
           <div className="flex flex-col items-start gap-4">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element -- data: URI, Next.js Image does not support it */}
+            <img
               src={qrCode}
               alt="TOTP QR code — scan with your authenticator app"
-              width={180}
-              height={180}
-              unoptimized
+              width={220}
+              height={220}
+              style={{ imageRendering: "pixelated" }}
             />
             <details className="text-xs text-muted-foreground">
               <summary className="cursor-pointer hover:text-foreground">
