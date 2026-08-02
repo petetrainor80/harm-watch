@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "The Harm Watch",
+  title: "Harm Watch",
   description:
-    "A public reporting service for websites that may breach the Online Safety Act 2023.",
+    "Report a website, forum or service you believe breaches the Online Safety Act 2023.",
 };
 
 export default function RootLayout({
