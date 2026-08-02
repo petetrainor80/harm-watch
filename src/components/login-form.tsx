@@ -5,13 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { createClient } from "@/lib/supabase/client";
 
+const INPUT_CLS =
+  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+
 interface Props {
   next?: string;
 }
 
 export function LoginForm({ next }: Props) {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -21,49 +24,22 @@ export function LoginForm({ next }: Props) {
     setLoading(true);
 
     const supabase = createClient();
-    const redirectTo = `${window.location.origin}/auth/callback${next ? `?next=${encodeURIComponent(next)}` : ""}`;
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: { emailRedirectTo: redirectTo },
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      setError("Could not send the link. Please check the email address and try again.");
-    } else {
-      setSubmitted(true);
+      setError("Incorrect email or password. Please try again.");
+      setLoading(false);
+      return;
     }
-    setLoading(false);
-  };
 
-  if (submitted) {
-    return (
-      <div className="space-y-4">
-        <p className="text-base leading-7">
-          Check your email. We have sent a sign-in link to{" "}
-          <span className="font-medium">{email}</span>.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          The link expires after one hour. If it does not arrive, check your spam folder.
-        </p>
-        <button
-          type="button"
-          onClick={() => {
-            setSubmitted(false);
-            setEmail("");
-          }}
-          className="text-sm underline underline-offset-4 text-muted-foreground hover:text-foreground"
-        >
-          Use a different email
-        </button>
-      </div>
-    );
-  }
+    // Let the proxy decide where to send them based on role; fall back to next or /.
+    window.location.href = next ?? "/admin";
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="email">Work email address</Label>
+        <Label htmlFor="email">Email address</Label>
         <input
           id="email"
           type="email"
@@ -72,7 +48,20 @@ export function LoginForm({ next }: Props) {
           placeholder="you@organisation.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className={INPUT_CLS}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="password">Password</Label>
+        <input
+          id="password"
+          type="password"
+          required
+          autoComplete="current-password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={INPUT_CLS}
         />
       </div>
 
@@ -83,7 +72,7 @@ export function LoginForm({ next }: Props) {
       )}
 
       <Button type="submit" disabled={loading} className="w-full">
-        {loading ? "Sending…" : "Send sign-in link"}
+        {loading ? "Signing in…" : "Sign in"}
       </Button>
     </form>
   );
