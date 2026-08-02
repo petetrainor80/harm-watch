@@ -72,7 +72,7 @@ type State =
   | { phase: "success" };
 
 const INPUT_CLS =
-  "flex w-full border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring rounded-sm";
+  "flex w-full border border-input bg-background px-3 py-2 text-base placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring rounded-md";
 
 export function SubmissionForm({ categories, descriptors }: Props) {
   const [state, setState] = useState<State>({ phase: "landing" });
@@ -267,7 +267,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                 Harm Watch
                 <Eye className="size-8 shrink-0" strokeWidth={2.5} />
               </h1>
-              <p className="text-base text-muted-foreground leading-7">
+              <p className="text-sm text-muted-foreground leading-6">
                 Use Harm Watch to report a website, forum or service you believe
                 breaches the Online Safety Act 2023. Reports are securely logged
                 and made available to approved organisations. Do not use this

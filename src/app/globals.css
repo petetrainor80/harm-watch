@@ -72,8 +72,7 @@
   /* GOV.UK yellow (#ffdd00) for focus rings — high-contrast, accessible */
   --ring: oklch(0.89 0.17 100);
 
-  /* Near-square corners — functional, not decorative */
-  --radius: 0.1875rem;
+  --radius: 0.5rem;
 
   --sidebar: oklch(0.96 0 0);
   --sidebar-foreground: oklch(0.095 0 0);
