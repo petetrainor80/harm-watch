@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
 import { Info, Eye } from "lucide-react";
+import Link from "next/link";
 
 const TRACKING_PARAMS = new Set([
   "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
@@ -543,11 +544,11 @@ export function SubmissionForm({ categories, descriptors }: Props) {
 function SiteHeader() {
   return (
     <header className="border-b px-6 py-4">
-      <a href="/" className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5">
+      <Link href="/" className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5">
         <Info className="size-5 shrink-0" strokeWidth={2.5} />
         Harm Watch
         <Eye className="size-5 shrink-0" strokeWidth={2.5} />
-      </a>
+      </Link>
     </header>
   );
 }

@@ -108,12 +108,12 @@ export default async function SubmissionsPage({ searchParams }: PageProps) {
         </button>
 
         {(status || search) && (
-          <a
+          <Link
             href="/admin/submissions"
             className="h-9 px-4 flex items-center rounded-md text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Clear
-          </a>
+          </Link>
         )}
       </form>
 
