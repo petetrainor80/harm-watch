@@ -10,7 +10,6 @@ const NAV_ITEMS = [
   { href: "/admin/organisations", label: "Organisations" },
   { href: "/admin/users", label: "Users" },
   { href: "/admin/tags", label: "Tags" },
-  { href: "/admin/audit", label: "Audit log" },
   { href: "/admin/api-keys", label: "API keys" },
 ];
 
