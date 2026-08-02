@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    name: Lint, typecheck, test
+    runs-on: ubuntu-latest
+    env:
+      # Placeholder values so the build doesn't fail on missing env vars.
+      # Real values are set in Vercel / GitHub repo secrets.
+      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+      NEXT_PUBLIC_TURNSTILE_SITE_KEY: placeholder
+      NEXT_PUBLIC_APP_URL: https://www.harm.watch
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit tests
+        run: npm run test
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify service role key absent from client bundle
+        run: |
+          if grep -r "SUPABASE_SERVICE_ROLE_KEY" .next/static/ 2>/dev/null; then
+            echo "ERROR: SUPABASE_SERVICE_ROLE_KEY found in client bundle"
+            exit 1
+          fi
+          echo "Service role key check passed"
