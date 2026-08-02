@@ -1,7 +1,14 @@
 import { SubmissionForm } from "@/components/submission-form";
 import { createServiceClient } from "@/lib/supabase/service";
 
+// Always server-render — taxonomy data must be fresh and the service role
+// key is not available at build time in CI.
+export const dynamic = "force-dynamic";
+
 async function getTags() {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { categories: [], descriptors: [] };
+  }
   const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("tags")
