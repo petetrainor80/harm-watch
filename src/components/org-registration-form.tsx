@@ -53,7 +53,18 @@ export function OrgRegistrationForm() {
       });
       const body = await res.json();
       if (!res.ok) {
-        setSubmitError(body.error?.message ?? "Something went wrong. Please try again.");
+        // Surface first field-level Zod error if available, otherwise use top-level message
+        const fieldErrors: Record<string, string[]> | undefined =
+          body.error?.details?.fieldErrors;
+        const firstFieldError = fieldErrors
+          ? Object.entries(fieldErrors)
+              .filter(([, errs]) => errs?.length)
+              .map(([field, errs]) => `${field}: ${errs![0]}`)
+              [0]
+          : undefined;
+        setSubmitError(
+          firstFieldError ?? body.error?.message ?? "Something went wrong. Please try again."
+        );
         return;
       }
       setSubmitted(true);

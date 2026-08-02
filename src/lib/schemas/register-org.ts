@@ -2,7 +2,13 @@ import { z } from "zod";
 
 export const registerOrgSchema = z.object({
   org_name: z.string().min(2).max(200),
-  website: z.string().url("Must be a valid URL"),
+  website: z.preprocess(
+    (val) =>
+      typeof val === "string" && !/^https?:\/\//i.test(val)
+        ? `https://${val}`
+        : val,
+    z.string().url("Must be a valid website URL (e.g. https://example.org)")
+  ),
   contact_name: z.string().min(2).max(200),
   work_email: z.string().email("Must be a valid email"),
   job_title: z.string().min(2).max(200),
