@@ -5,10 +5,34 @@ vi.mock("@/lib/blocked-categories", () => ({
   recordBlockedRoutingEvent: vi.fn(),
 }));
 
+vi.mock("@/lib/turnstile", () => ({
+  verifyTurnstileToken: vi.fn(),
+}));
+
+vi.mock("@/lib/rate-limit", () => ({
+  checkRateLimit: vi.fn(),
+}));
+
+vi.mock("@/lib/url", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/url")>();
+  return {
+    ...actual,
+    hashIp: vi.fn().mockReturnValue("hashed-ip"),
+  };
+});
+
+vi.mock("@/lib/supabase/service", () => ({
+  createServiceClient: vi.fn(() => ({
+    rpc: vi.fn().mockResolvedValue({ error: null }),
+  })),
+}));
+
 import {
   checkForBlockedCategories,
   recordBlockedRoutingEvent,
 } from "@/lib/blocked-categories";
+import { verifyTurnstileToken } from "@/lib/turnstile";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { POST } from "./route";
 
 function makeRequest(body: unknown) {
@@ -29,6 +53,8 @@ beforeEach(() => {
   vi.clearAllMocks();
   vi.mocked(checkForBlockedCategories).mockResolvedValue({ blocked: false });
   vi.mocked(recordBlockedRoutingEvent).mockResolvedValue(undefined);
+  vi.mocked(verifyTurnstileToken).mockResolvedValue(true);
+  vi.mocked(checkRateLimit).mockResolvedValue({ allowed: true });
 });
 
 describe("POST /api/report — blocked category routing", () => {
@@ -71,6 +97,20 @@ describe("POST /api/report — blocked category routing", () => {
   it("returns 202 for a valid payload", async () => {
     const res = await POST(makeRequest(validPayload));
     expect(res.status).toBe(202);
+  });
+
+  it("returns 403 when Turnstile verification fails", async () => {
+    vi.mocked(verifyTurnstileToken).mockResolvedValue(false);
+
+    const res = await POST(makeRequest(validPayload));
+    expect(res.status).toBe(403);
+  });
+
+  it("returns 429 when rate limited", async () => {
+    vi.mocked(checkRateLimit).mockResolvedValue({ allowed: false, retryAfter: 3600 });
+
+    const res = await POST(makeRequest(validPayload));
+    expect(res.status).toBe(429);
   });
 
   it("returns fake 200 success for a filled honeypot — no DB calls", async () => {
