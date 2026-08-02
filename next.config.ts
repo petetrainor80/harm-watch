@@ -2,9 +2,10 @@ import type { NextConfig } from "next";
 
 const CSP = [
   "default-src 'self'",
-  // Next.js script bundles are served from /_next/static/ (same origin).
-  // Turnstile runs in a sandboxed iframe — no script source needed for it.
-  "script-src 'self'",
+  // Next.js injects inline bootstrap scripts at runtime (hydration, routing).
+  // 'unsafe-inline' is required until nonce-based CSP is wired through middleware.
+  // PRD-Q: implement per-request nonces via proxy.ts to tighten this.
+  "script-src 'self' 'unsafe-inline'",
   // Tailwind v4 generates a static CSS file in production; no inline styles needed.
   "style-src 'self'",
   "img-src 'self' data:",

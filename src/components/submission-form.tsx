@@ -303,9 +303,25 @@ export function SubmissionForm({ categories, descriptors }: Props) {
             </form>
 
             <p className="text-xs text-center text-muted-foreground">
-              If you are reporting a specific crime, use{" "}
-              <span className="font-medium">report.police.uk</span>. For fraud,
-              use <span className="font-medium">actionfraud.police.uk</span>.
+              If you are reporting a specific crime,{" "}
+              <a
+                href="https://www.police.uk/pu/contact-the-police/report-a-crime-incident/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                click here
+              </a>
+              . For fraud, use{" "}
+              <a
+                href="https://www.actionfraud.police.uk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                actionfraud.police.uk
+              </a>
+              .
             </p>
           </div>
         </div>
@@ -355,10 +371,25 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               What type of content is this?{" "}
               <span aria-hidden className="text-destructive">*</span>
               <span className="block text-sm font-normal text-muted-foreground mt-1 leading-6">
-                Select all that apply. For a specific crime, use{" "}
-                <span className="font-medium">report.police.uk</span>. For
-                fraud, use{" "}
-                <span className="font-medium">actionfraud.police.uk</span>.
+                Select all that apply. For a specific crime,{" "}
+                <a
+                  href="https://www.police.uk/pu/contact-the-police/report-a-crime-incident/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  click here
+                </a>
+                . For fraud, use{" "}
+                <a
+                  href="https://www.actionfraud.police.uk"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  actionfraud.police.uk
+                </a>
+                .
               </span>
             </legend>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
