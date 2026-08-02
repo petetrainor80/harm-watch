@@ -21,6 +21,7 @@ interface Props {
 export function StatusForm({ submissionId, currentStatus, currentNote }: Props) {
   const [status, setStatus] = useState(currentStatus);
   const [note, setNote] = useState(currentNote ?? "");
+  const [canonicalId, setCanonicalId] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -31,14 +32,21 @@ export function StatusForm({ submissionId, currentStatus, currentNote }: Props) 
       setError("A status note is required.");
       return;
     }
+    if (status === "duplicate" && !canonicalId.trim()) {
+      setError("A canonical submission ID is required when marking as duplicate.");
+      return;
+    }
     setError(null);
     setLoading(true);
     setSaved(false);
 
+    const body: Record<string, string> = { status, status_note: note };
+    if (status === "duplicate" && canonicalId.trim()) body.canonical_id = canonicalId.trim();
+
     const res = await fetch(`/api/admin/submissions/${submissionId}/status`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, status_note: note }),
+      body: JSON.stringify(body),
     });
 
     if (!res.ok) {
@@ -67,6 +75,20 @@ export function StatusForm({ submissionId, currentStatus, currentNote }: Props) 
           </select>
         </div>
       </div>
+
+      {status === "duplicate" && (
+        <div className="space-y-1.5">
+          <Label htmlFor="canonical-id">Canonical submission ID <span className="text-muted-foreground font-normal">(required for duplicate)</span></Label>
+          <input
+            id="canonical-id"
+            type="text"
+            value={canonicalId}
+            onChange={(e) => { setCanonicalId(e.target.value); setSaved(false); }}
+            placeholder="UUID of the original submission"
+            className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          />
+        </div>
+      )}
 
       <div className="space-y-1.5">
         <Label htmlFor="status-note">

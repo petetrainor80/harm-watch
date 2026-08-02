@@ -56,18 +56,26 @@ export default async function OrgFeedPage({ searchParams }: PageProps) {
 
   return (
     <div className="space-y-6 max-w-5xl">
-      <header className="flex items-center justify-between">
+      <header className="flex items-center justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-xl font-semibold tracking-tight">Live submissions feed</h1>
           <p className="text-sm text-muted-foreground">
             All submissions are allegations only — not confirmed or proven. URLs are displayed defanged.
           </p>
         </div>
-        {total > 0 && (
-          <span className="text-sm text-muted-foreground shrink-0">
-            {total.toLocaleString()} {total === 1 ? "record" : "records"}
-          </span>
-        )}
+        <div className="flex items-center gap-3 shrink-0">
+          {total > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {total.toLocaleString()} {total === 1 ? "record" : "records"}
+            </span>
+          )}
+          <a
+            href={`/api/org/submissions/export${search ? `?search=${encodeURIComponent(search)}` : ""}`}
+            className="text-xs px-3 py-1.5 rounded-md border hover:bg-secondary transition-colors"
+          >
+            Export CSV
+          </a>
+        </div>
       </header>
 
       <form method="get" className="flex flex-wrap gap-3">

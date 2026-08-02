@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { UserActions } from "@/components/admin/user-actions";
 
 export default async function UsersPage() {
   const supabase = await createClient();
@@ -33,22 +34,25 @@ export default async function UsersPage() {
                     <p className="text-xs text-muted-foreground">{org.name}</p>
                   )}
                 </div>
-                <div className="flex items-center gap-3 shrink-0 text-xs">
-                  <span className="bg-secondary px-2 py-0.5 rounded-full">
-                    {u.role}
-                  </span>
-                  <span
-                    className={
-                      u.is_active
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-muted-foreground"
-                    }
-                  >
-                    {u.is_active ? "Active" : "Inactive"}
-                  </span>
-                  <span className="text-muted-foreground hidden sm:block">
-                    {new Date(u.created_at).toLocaleDateString("en-GB")}
-                  </span>
+                <div className="flex flex-col items-end gap-2 shrink-0 text-xs">
+                  <div className="flex items-center gap-3">
+                    <span className="bg-secondary px-2 py-0.5 rounded-full">
+                      {u.role}
+                    </span>
+                    <span
+                      className={
+                        u.is_active
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-muted-foreground"
+                      }
+                    >
+                      {u.is_active ? "Active" : "Inactive"}
+                    </span>
+                    <span className="text-muted-foreground hidden sm:block">
+                      {new Date(u.created_at).toLocaleDateString("en-GB")}
+                    </span>
+                  </div>
+                  <UserActions userId={u.id} isActive={u.is_active} role={u.role} />
                 </div>
               </div>
             );

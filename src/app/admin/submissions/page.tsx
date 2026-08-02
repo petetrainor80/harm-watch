@@ -72,11 +72,19 @@ export default async function SubmissionsPage({ searchParams }: PageProps) {
     <div className="space-y-6 max-w-5xl">
       <header className="flex items-center justify-between">
         <h1 className="text-xl font-semibold tracking-tight">Submissions</h1>
-        {total > 0 && (
-          <span className="text-sm text-muted-foreground">
-            {total.toLocaleString()} {total === 1 ? "record" : "records"}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {total > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {total.toLocaleString()} {total === 1 ? "record" : "records"}
+            </span>
+          )}
+          <a
+            href={`/api/admin/submissions/export${status || search ? `?${new URLSearchParams({ ...(status ? { status } : {}), ...(search ? { search } : {}) }).toString()}` : ""}`}
+            className="text-xs px-3 py-1.5 rounded-md border hover:bg-secondary transition-colors"
+          >
+            Export CSV
+          </a>
+        </div>
       </header>
 
       <form method="get" className="flex flex-wrap gap-3">

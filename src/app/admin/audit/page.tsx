@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
 
 interface PageProps {
   searchParams: Promise<{ page?: string }>;
@@ -72,23 +73,23 @@ export default async function AuditPage({ searchParams }: PageProps) {
       {totalPages > 1 && (
         <div className="flex items-center gap-3 text-sm">
           {page > 1 && (
-            <a
+            <Link
               href={`/admin/audit?page=${page - 1}`}
               className="px-3 py-1.5 border rounded-md hover:bg-secondary transition-colors"
             >
               Previous
-            </a>
+            </Link>
           )}
           <span className="text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           {page < totalPages && (
-            <a
+            <Link
               href={`/admin/audit?page=${page + 1}`}
               className="px-3 py-1.5 border rounded-md hover:bg-secondary transition-colors"
             >
               Next
-            </a>
+            </Link>
           )}
         </div>
       )}

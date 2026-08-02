@@ -555,10 +555,10 @@ function SiteFooter() {
     <footer className="border-t px-6 py-6 mt-auto">
       <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-muted-foreground text-center">
         <span>© Harm Watch</span>
-        <a href="/privacy" className="hover:text-foreground underline underline-offset-4">Privacy notice</a>
-        <a href="/terms" className="hover:text-foreground underline underline-offset-4">Terms of use</a>
-        <a href="/about" className="hover:text-foreground underline underline-offset-4">About</a>
-        <a href="/request-access" className="hover:text-foreground underline underline-offset-4">Organisation access</a>
+        <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">Privacy notice</Link>
+        <Link href="/terms" className="hover:text-foreground underline underline-offset-4">Terms of use</Link>
+        <Link href="/about" className="hover:text-foreground underline underline-offset-4">About</Link>
+        <Link href="/request-access" className="hover:text-foreground underline underline-offset-4">Organisation access</Link>
       </div>
     </footer>
   );

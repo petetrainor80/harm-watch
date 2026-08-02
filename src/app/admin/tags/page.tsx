@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { SuggestionActions } from "@/components/admin/suggestion-actions";
 
 export default async function TagsPage() {
   const supabase = await createClient();
@@ -42,18 +43,18 @@ export default async function TagsPage() {
             {suggestions.map((s) => (
               <div
                 key={s.id}
-                className="flex items-center justify-between px-4 py-3 gap-4"
+                className="flex flex-col sm:flex-row sm:items-center justify-between px-4 py-3 gap-3"
               >
-                <p className="font-medium">{s.raw_text}</p>
-                <p className="text-xs text-muted-foreground shrink-0">
-                  {new Date(s.created_at).toLocaleDateString("en-GB")}
-                </p>
+                <div className="space-y-1 min-w-0">
+                  <p className="font-medium text-sm">{s.raw_text}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(s.created_at).toLocaleDateString("en-GB")}
+                  </p>
+                  <SuggestionActions suggestionId={s.id} rawText={s.raw_text} />
+                </div>
               </div>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground">
-            Tag suggestion approval (promote to taxonomy) is coming in a later release.
-          </p>
         </section>
       )}
 

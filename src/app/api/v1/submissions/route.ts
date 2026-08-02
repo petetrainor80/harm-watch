@@ -1,7 +1,6 @@
 import { createServiceClient } from "@/lib/supabase/service";
 import { NextRequest, NextResponse } from "next/server";
-import { createHash } from "crypto";
-import { defangUrl } from "@/lib/url";
+import { verifyApiKey, rateLimitHeaders } from "@/lib/api-auth";
 
 interface SubmissionTagRow {
   tags: { slug: string; label: string; kind: string } | null;
@@ -15,64 +14,51 @@ interface SubmissionRow {
   report_count: number;
   first_reported_at: string;
   last_reported_at: string;
+  status_changed_at: string | null;
   submission_tags: SubmissionTagRow[];
 }
 
 export async function GET(request: NextRequest) {
-  // --- Auth ---
-  const authHeader = request.headers.get("authorization") ?? "";
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-
-  if (!token) {
+  const auth = await verifyApiKey(request);
+  if (!auth.ok) {
     return NextResponse.json(
-      { error: { code: "unauthorized", message: "Invalid or revoked API key." } },
-      { status: 401, headers: { "Cache-Control": "no-store" } }
+      { error: { code: auth.code, message: auth.message } },
+      { status: auth.status, headers: { "Cache-Control": "no-store" } }
     );
   }
 
-  const tokenHash = createHash("sha256").update(token).digest("hex");
   const service = createServiceClient();
 
-  const { data: apiKey } = await service
-    .from("api_keys")
-    .select("id, revoked_at, organisation_id")
-    .eq("key_hash", tokenHash)
-    .single();
-
-  if (!apiKey || apiKey.revoked_at) {
-    return NextResponse.json(
-      { error: { code: "unauthorized", message: "Invalid or revoked API key." } },
-      { status: 401, headers: { "Cache-Control": "no-store" } }
-    );
-  }
-
-  // Update last_used_at (fire and forget — don't block the response)
-  service
-    .from("api_keys")
-    .update({ last_used_at: new Date().toISOString() })
-    .eq("id", apiKey.id)
-    .then(() => {});
-
-  // --- Pagination params ---
   const { searchParams } = new URL(request.url);
-  const limitParam = Math.min(
-    100,
-    Math.max(1, parseInt(searchParams.get("limit") ?? "100", 10) || 100)
-  );
   const cursorParam = searchParams.get("cursor");
+  const statusParam = searchParams.get("status") ?? "live";
+  const categoryParam = searchParams.get("category");
+  const domainParam = searchParams.get("domain");
+  const sinceParam = searchParams.get("since");
+  const limitMax = Math.min(500, Math.max(1, parseInt(searchParams.get("limit") ?? "100", 10) || 100));
 
   // --- Build query ---
   let query = service
     .from("submissions")
     .select(
       `id, url_normalised, domain, status, report_count,
-       first_reported_at, last_reported_at,
+       first_reported_at, last_reported_at, status_changed_at,
        submission_tags(tags(slug, label, kind))`
     )
-    .eq("status", "live")
     .order("last_reported_at", { ascending: false })
     .order("id", { ascending: false })
-    .limit(limitParam + 1);
+    .limit(limitMax + 1);
+
+  // Support comma-separated status values.
+  const statuses = statusParam.split(",").map((s) => s.trim()).filter(Boolean);
+  if (statuses.length === 1) {
+    query = query.eq("status", statuses[0]);
+  } else if (statuses.length > 1) {
+    query = query.in("status", statuses);
+  }
+
+  if (domainParam) query = query.eq("domain", domainParam);
+  if (sinceParam) query = query.gte("last_reported_at", sinceParam);
 
   if (cursorParam) {
     let cursor: { ts: string; id: string } | null = null;
@@ -103,8 +89,15 @@ export async function GET(request: NextRequest) {
   }
 
   const allRows = (rows ?? []) as unknown as SubmissionRow[];
-  const hasMore = allRows.length > limitParam;
-  const pageRows = hasMore ? allRows.slice(0, limitParam) : allRows;
+  const hasMore = allRows.length > limitMax;
+  const pageRows = hasMore ? allRows.slice(0, limitMax) : allRows;
+
+  // Filter by category after fetch (submission_tags join makes SQL filtering complex).
+  const filtered = categoryParam
+    ? pageRows.filter((s) =>
+        s.submission_tags.some((st) => st.tags?.slug === categoryParam && st.tags?.kind === "category")
+      )
+    : pageRows;
 
   let nextCursor: string | null = null;
   if (hasMore && pageRows.length > 0) {
@@ -114,26 +107,25 @@ export async function GET(request: NextRequest) {
     ).toString("base64");
   }
 
-  const data = pageRows.map((s) => ({
+  const data = filtered.map((s) => ({
     id: s.id,
-    url: defangUrl(s.url_normalised),
+    url: s.url_normalised,
     domain: s.domain,
+    status: s.status,
     report_count: s.report_count,
     categories: s.submission_tags
       .filter((st) => st.tags?.kind === "category")
       .map((st) => st.tags!.slug),
+    descriptors: s.submission_tags
+      .filter((st) => st.tags?.kind === "descriptor")
+      .map((st) => st.tags!.slug),
     first_reported_at: s.first_reported_at,
     last_reported_at: s.last_reported_at,
+    status_changed_at: s.status_changed_at ?? null,
   }));
 
   return NextResponse.json(
-    {
-      data,
-      meta: {
-        has_more: hasMore,
-        next_cursor: nextCursor,
-      },
-    },
-    { headers: { "Cache-Control": "no-store" } }
+    { data, next_cursor: nextCursor, has_more: hasMore },
+    { headers: rateLimitHeaders(auth.key.rate_limit_per_hour) }
   );
 }

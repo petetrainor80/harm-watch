@@ -6,6 +6,7 @@ import { z } from "zod";
 const schema = z.object({
   status: z.enum(["live", "pending_review", "removed", "rejected", "duplicate"]),
   status_note: z.string().min(1, "A status note is required").max(500),
+  canonical_id: z.string().uuid().optional(),
 });
 
 export async function POST(
@@ -39,7 +40,7 @@ export async function POST(
     );
   }
 
-  const { status, status_note } = parse.data;
+  const { status, status_note, canonical_id } = parse.data;
   const service = createServiceClient();
 
   const { data: current } = await service
@@ -59,6 +60,7 @@ export async function POST(
       status_note,
       status_changed_at: new Date().toISOString(),
       status_changed_by: user.id,
+      ...(status === "duplicate" && canonical_id ? { admin_notes: `Duplicate of ${canonical_id}` } : {}),
     })
     .eq("id", id);
 
