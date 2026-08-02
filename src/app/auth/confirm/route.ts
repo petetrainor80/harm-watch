@@ -42,7 +42,9 @@ export async function GET(request: Request) {
       return NextResponse.redirect(`${origin}/admin`);
     }
     if (profile?.role === "org_admin" || profile?.role === "org_member") {
-      return NextResponse.redirect(`${origin}/org`);
+      // First-time invite: send to password setup so they can log in without a magic link next time.
+      const dest = type === "invite" ? "/org/setup" : "/org";
+      return NextResponse.redirect(`${origin}${dest}`);
     }
   }
 
