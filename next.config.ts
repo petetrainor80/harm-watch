@@ -1,11 +1,14 @@
 import type { NextConfig } from "next";
 
+const isDev = process.env.NODE_ENV === "development";
+
 const CSP = [
   "default-src 'self'",
   // Next.js injects inline bootstrap scripts at runtime (hydration, routing).
   // 'unsafe-inline' is required until nonce-based CSP is wired through middleware.
+  // In dev, React also needs 'unsafe-eval' for stack trace reconstruction.
   // PRD-Q: implement per-request nonces via proxy.ts to tighten this.
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
   // Tailwind v4 generates a static CSS file in production; no inline styles needed.
   "style-src 'self'",
   "img-src 'self' data:",
