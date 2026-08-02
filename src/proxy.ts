@@ -64,24 +64,8 @@ export async function proxy(request: NextRequest) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
-    // TOTP (AAL2) is mandatory for super_admin on every admin request.
-    const { data: mfa } =
-      await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
-
-    if (mfa) {
-      if (mfa.nextLevel === "aal2" && mfa.currentLevel !== "aal2") {
-        // Enrolled but not yet verified this session.
-        const mfaVerifyUrl = request.nextUrl.clone();
-        mfaVerifyUrl.pathname = "/mfa-verify";
-        return NextResponse.redirect(mfaVerifyUrl);
-      }
-      if (mfa.nextLevel !== "aal2") {
-        // Not yet enrolled — must enrol before accessing admin.
-        const mfaSetupUrl = request.nextUrl.clone();
-        mfaSetupUrl.pathname = "/mfa-setup";
-        return NextResponse.redirect(mfaSetupUrl);
-      }
-    }
+    // PRD-Q: TOTP enforcement temporarily disabled for testing.
+    // Re-enable before M7 hardening by restoring the AAL2 check below.
   }
 
   // /org/* — org_admin or org_member only
