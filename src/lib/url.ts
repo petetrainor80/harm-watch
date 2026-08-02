@@ -91,6 +91,21 @@ export function normaliseUrl(raw: string): NormaliseResult {
   return { normalised, domain, hash };
 }
 
+// Defang a URL for display in admin views — never render reported URLs as
+// live hyperlinks. Replaces scheme and dots in hostname so the URL cannot
+// be clicked or auto-linked.
+export function defangUrl(url: string): string {
+  try {
+    const u = new URL(url);
+    const scheme = u.protocol.replace("http", "hxxp");
+    const host = u.hostname.replace(/\./g, "[.]");
+    const port = u.port ? `:${u.port}` : "";
+    return `${scheme}//${host}${port}${u.pathname}${u.search}`;
+  } catch {
+    return url.replace(/^https?:\/\//, (m) => m.replace("http", "hxxp"));
+  }
+}
+
 // HMAC of an IP address with a server-side pepper. Rotating the pepper resets
 // throttle continuity by design — see PRD section 10.
 export function hashIp(ip: string): string {
