@@ -25,12 +25,9 @@ function previewNormalisedUrl(raw: string): string {
     /^\d+\.\d+\.\d+\.\d+$/.test(hostname)
   )
     throw new Error("Private and local addresses are not accepted");
-  const port =
-    (url.protocol === "http:" && url.port === "80") ||
-    (url.protocol === "https:" && url.port === "443")
-      ? ""
-      : url.port;
-  const host = port ? `${hostname}:${port}` : hostname;
+  const canonHostname = hostname.startsWith("www.") ? hostname.slice(4) : hostname;
+  const port = url.port === "80" || url.port === "443" ? "" : url.port;
+  const host = port ? `${canonHostname}:${port}` : canonHostname;
   const params = new URLSearchParams(url.searchParams);
   for (const key of [...params.keys()]) {
     if (TRACKING_PARAMS.has(key) || key.startsWith("utm_")) params.delete(key);
@@ -38,7 +35,7 @@ function previewNormalisedUrl(raw: string): string {
   params.sort();
   const path = url.pathname === "/" ? "" : url.pathname;
   const search = params.size > 0 ? `?${params.toString()}` : "";
-  return `${url.protocol}//${host}${path}${search}`;
+  return `https://${host}${path}${search}`;
 }
 
 // Browser-safe defang — replaces scheme and dots in hostname so the URL

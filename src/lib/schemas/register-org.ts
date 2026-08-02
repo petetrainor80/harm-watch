@@ -10,7 +10,7 @@ export const registerOrgSchema = z.object({
   registration_number: z.string().max(50).optional(),
   justification: z
     .string()
-    .min(50, "Please provide at least 50 characters explaining why you need access")
+    .min(20, "Please provide at least 20 characters explaining why you need access")
     .max(2000),
   turnstile_token: z.string().min(1),
 });

@@ -17,12 +17,14 @@ export async function POST(request: Request) {
 
   const parsed = registerOrgSchema.safeParse(body);
   if (!parsed.success) {
+    const errors = parsed.error.flatten();
+    const firstFieldError = Object.values(errors.fieldErrors).flat()[0];
     return NextResponse.json(
       {
         error: {
           code: "validation_error",
-          message: "Invalid request",
-          details: parsed.error.flatten(),
+          message: firstFieldError ?? "Invalid request — please check all required fields.",
+          details: errors,
         },
       },
       { status: 422 }

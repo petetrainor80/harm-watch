@@ -17,9 +17,19 @@ describe("normaliseUrl — basic normalisation", () => {
     expect(normalised).toBe("https://example.com/path/");
   });
 
+  it("canonicalizes http to https", () => {
+    const { normalised } = normaliseUrl("http://example.com/path");
+    expect(normalised).toBe("https://example.com/path");
+  });
+
+  it("strips the www. prefix", () => {
+    const { normalised } = normaliseUrl("https://www.example.com/path");
+    expect(normalised).toBe("https://example.com/path");
+  });
+
   it("drops the default http port", () => {
     const { normalised } = normaliseUrl("http://example.com:80/path");
-    expect(normalised).toBe("http://example.com/path");
+    expect(normalised).toBe("https://example.com/path");
   });
 
   it("drops the default https port", () => {
@@ -100,6 +110,24 @@ describe("normaliseUrl — deduplication via hash", () => {
   it("produces identical hashes for the same effective URL", () => {
     const a = normaliseUrl("HTTPS://EXAMPLE.COM/?utm_source=x#frag");
     const b = normaliseUrl("https://example.com/");
+    expect(a.hash).toBe(b.hash);
+  });
+
+  it("treats http and https as the same site", () => {
+    const a = normaliseUrl("http://example.com/page");
+    const b = normaliseUrl("https://example.com/page");
+    expect(a.hash).toBe(b.hash);
+  });
+
+  it("treats www and non-www as the same site", () => {
+    const a = normaliseUrl("https://www.example.com/page");
+    const b = normaliseUrl("https://example.com/page");
+    expect(a.hash).toBe(b.hash);
+  });
+
+  it("treats http://www and https:// as the same site", () => {
+    const a = normaliseUrl("http://www.example.com");
+    const b = normaliseUrl("https://example.com");
     expect(a.hash).toBe(b.hash);
   });
 

@@ -181,7 +181,7 @@ export function OrgRegistrationForm() {
           aria-describedby="justification-hint"
         />
         <p id="justification-hint" className="text-xs text-muted-foreground">
-          Minimum 50 characters. {fields.justification.length}/2000.
+          Minimum 20 characters. {fields.justification.length}/2000.
         </p>
       </div>
 

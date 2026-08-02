@@ -57,15 +57,14 @@ export function normaliseUrl(raw: string): NormaliseResult {
     throw new Error("URL must have a valid public suffix");
   }
 
-  // Drop default ports
-  const port =
-    (url.protocol === "http:" && url.port === "80") ||
-    (url.protocol === "https:" && url.port === "443")
-      ? ""
-      : url.port;
+  // Canonicalize: always https, strip www. prefix so http://www.x.com ≡ https://x.com
+  const canonHostname = hostname.startsWith("www.") ? hostname.slice(4) : hostname;
+
+  // Drop default ports (port 80 on http treated as https after canonicalization)
+  const port = url.port === "80" || url.port === "443" ? "" : url.port;
 
   // Strip credentials
-  const host = port ? `${hostname}:${port}` : hostname;
+  const host = port ? `${canonHostname}:${port}` : canonHostname;
 
   // Remove tracking params; sort the rest alphabetically
   const params = new URLSearchParams(url.searchParams);
@@ -81,7 +80,7 @@ export function normaliseUrl(raw: string): NormaliseResult {
   // strip the trailing slash only when the path is empty (just "/")
   const path = url.pathname === "/" ? "" : url.pathname;
   const search = params.size > 0 ? `?${params.toString()}` : "";
-  const normalised = `${url.protocol}//${host}${path}${search}`;
+  const normalised = `https://${host}${path}${search}`;
 
   // Registrable domain via public suffix list (e.g. a.b.example.co.uk → example.co.uk)
   const domain = tld.domain;

@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { defangUrl } from "@/lib/url";
 import Link from "next/link";
+import { RemoveButton } from "@/components/admin/remove-button";
 
 const PAGE_SIZE = 50;
 
@@ -127,12 +128,14 @@ export default async function SubmissionsPage({ searchParams }: PageProps) {
               .map((st) => st.tags!.label);
 
             return (
-              <Link
+              <div
                 key={s.id}
-                href={`/admin/submissions/${s.id}`}
                 className="flex flex-col sm:flex-row sm:items-center gap-2 px-4 py-3 hover:bg-secondary/50 transition-colors"
               >
-                <div className="flex-1 min-w-0 space-y-0.5">
+                <Link
+                  href={`/admin/submissions/${s.id}`}
+                  className="flex-1 min-w-0 space-y-0.5"
+                >
                   <p className="font-mono text-xs text-muted-foreground truncate">
                     {defangUrl(s.url_normalised)}
                   </p>
@@ -147,7 +150,7 @@ export default async function SubmissionsPage({ searchParams }: PageProps) {
                       </span>
                     ))}
                   </div>
-                </div>
+                </Link>
                 <div className="flex items-center gap-3 shrink-0">
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_STYLES[s.status] ?? ""}`}
@@ -160,8 +163,9 @@ export default async function SubmissionsPage({ searchParams }: PageProps) {
                   <span className="text-xs text-muted-foreground hidden sm:block">
                     {new Date(s.last_reported_at).toLocaleDateString("en-GB")}
                   </span>
+                  {s.status !== "removed" && <RemoveButton id={s.id} />}
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>
@@ -174,23 +178,23 @@ export default async function SubmissionsPage({ searchParams }: PageProps) {
       {totalPages > 1 && (
         <div className="flex items-center gap-3 text-sm">
           {page > 1 && (
-            <a
+            <Link
               href={buildPageUrl(status, search, page - 1)}
               className="px-3 py-1.5 border rounded-md hover:bg-secondary transition-colors"
             >
               Previous
-            </a>
+            </Link>
           )}
           <span className="text-muted-foreground">
             Page {page} of {totalPages}
           </span>
           {page < totalPages && (
-            <a
+            <Link
               href={buildPageUrl(status, search, page + 1)}
               className="px-3 py-1.5 border rounded-md hover:bg-secondary transition-colors"
             >
               Next
-            </a>
+            </Link>
           )}
         </div>
       )}
