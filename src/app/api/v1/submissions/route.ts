@@ -2,6 +2,21 @@ import { createServiceClient } from "@/lib/supabase/service";
 import { NextRequest, NextResponse } from "next/server";
 import { verifyApiKey, rateLimitHeaders } from "@/lib/api-auth";
 
+function defang(url: string): string {
+  return url.replace(/^https/i, "hxxps").replace(/^http(?!s)/i, "hxxp").replace(/\./g, "[.]");
+}
+
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Authorization",
+  "Access-Control-Expose-Headers": "X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset",
+};
+
+export function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+}
+
 interface SubmissionTagRow {
   tags: { slug: string; label: string; kind: string } | null;
 }
@@ -23,7 +38,7 @@ export async function GET(request: NextRequest) {
   if (!auth.ok) {
     return NextResponse.json(
       { error: { code: auth.code, message: auth.message } },
-      { status: auth.status, headers: { "Cache-Control": "no-store" } }
+      { status: auth.status, headers: { "Cache-Control": "no-store", ...CORS_HEADERS } }
     );
   }
 
@@ -67,7 +82,7 @@ export async function GET(request: NextRequest) {
     } catch {
       return NextResponse.json(
         { error: { code: "invalid_cursor", message: "Invalid cursor." } },
-        { status: 400, headers: { "Cache-Control": "no-store" } }
+        { status: 400, headers: { "Cache-Control": "no-store", ...CORS_HEADERS } }
       );
     }
 
@@ -84,7 +99,7 @@ export async function GET(request: NextRequest) {
     console.error("v1 submissions query error", error);
     return NextResponse.json(
       { error: { code: "server_error", message: "Something went wrong." } },
-      { status: 500, headers: { "Cache-Control": "no-store" } }
+      { status: 500, headers: { "Cache-Control": "no-store", ...CORS_HEADERS } }
     );
   }
 
@@ -109,7 +124,7 @@ export async function GET(request: NextRequest) {
 
   const data = filtered.map((s) => ({
     id: s.id,
-    url: s.url_normalised,
+    url: defang(s.url_normalised),
     domain: s.domain,
     status: s.status,
     report_count: s.report_count,
@@ -126,6 +141,6 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json(
     { data, next_cursor: nextCursor, has_more: hasMore },
-    { headers: rateLimitHeaders(auth.key.rate_limit_per_hour) }
+    { headers: { ...rateLimitHeaders(auth.key.rate_limit_per_hour), ...CORS_HEADERS } }
   );
 }

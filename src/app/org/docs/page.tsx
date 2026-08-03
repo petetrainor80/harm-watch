@@ -28,6 +28,19 @@ export default function OrgDocsPage() {
           revoke it and issue a new one.
         </p>
         <CodeBlock>{`Authorization: Bearer hw_live_YOUR_KEY_HERE`}</CodeBlock>
+        <div className="flex items-center justify-between rounded-md border bg-muted/40 px-4 py-3">
+          <p className="text-sm text-muted-foreground">
+            Want to try it before you build?
+          </p>
+          <a
+            href="/api-demo.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-[#1d70b8] underline underline-offset-4 hover:text-foreground whitespace-nowrap"
+          >
+            Open interactive demo →
+          </a>
+        </div>
         <p className="text-sm text-muted-foreground">
           Requests without a valid key return{" "}
           <code className="font-mono text-xs bg-muted px-1 py-0.5 rounded">401 Unauthorized</code>.
