@@ -641,7 +641,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               >
                 terms of use
               </a>
-              .
+              . I understand that submitting a URL does not mean it will automatically be removed from the internet.
             </span>
           </label>
 
