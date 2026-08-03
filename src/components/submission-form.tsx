@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
 import Link from "next/link";
-import { TriangleAlert, Eye, ArrowRightToLine, CircleAlert } from "lucide-react";
+import { TriangleAlert, Eye, ArrowRightToLine, CircleAlert, Info } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 const TRACKING_PARAMS = new Set([
@@ -87,6 +87,31 @@ export function SubmissionForm({ categories, descriptors }: Props) {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [checkStatus, setCheckStatus] = useState<null | "checking" | { count: number }>(null);
+
+  useEffect(() => {
+    const trimmed = url.trim();
+    if (!trimmed) { setCheckStatus(null); return; }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+      try { new URL(withScheme); } catch { return; }
+
+      if (!cancelled) setCheckStatus("checking");
+      try {
+        const res = await fetch(`/api/submissions/check?url=${encodeURIComponent(withScheme)}`);
+        if (!cancelled && res.ok) {
+          const data = await res.json();
+          setCheckStatus({ count: data.count });
+        }
+      } catch {
+        if (!cancelled) setCheckStatus(null);
+      }
+    }, 400);
+
+    return () => { cancelled = true; clearTimeout(timer); };
+  }, [url]);
 
   const handleUrlContinue = (e: React.FormEvent) => {
     e.preventDefault();
@@ -305,6 +330,20 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                   <p id="landing-url-error" className="flex items-center gap-1.5 text-sm font-bold text-destructive" role="alert">
                     <CircleAlert className="size-4 shrink-0" />
                     {urlError}
+                  </p>
+                )}
+                {!urlError && checkStatus === "checking" && (
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <span className="size-3 rounded-full border-2 border-current border-t-transparent animate-spin inline-block" />
+                    Checking...
+                  </p>
+                )}
+                {!urlError && typeof checkStatus === "object" && checkStatus !== null && checkStatus.count > 0 && (
+                  <p className="flex items-center gap-1.5 text-xs text-[#1d70b8]">
+                    <Info className="size-3.5 shrink-0" />
+                    {checkStatus.count === 1
+                      ? "1 report already on record for this URL."
+                      : `${checkStatus.count} reports already on record for this URL.`}
                   </p>
                 )}
               </div>
