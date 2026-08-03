@@ -31,9 +31,9 @@ export default function RootLayout({
       className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <div className="fixed top-0 inset-x-0 h-[3px] bg-primary z-50" />
+        <div className="fixed top-0 inset-x-0 h-[10px] bg-[#1d70b8] z-50" />
         {children}
-        <div className="fixed bottom-0 inset-x-0 h-[3px] bg-primary z-50" />
+        <div className="fixed bottom-0 inset-x-0 h-[10px] bg-[#1d70b8] z-50" />
       </body>
     </html>
   );
