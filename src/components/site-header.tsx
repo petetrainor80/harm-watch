@@ -8,9 +8,9 @@ export function SiteHeader() {
         href="/"
         className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5"
       >
-        <TriangleAlert className="size-5 shrink-0" strokeWidth={2.5} />
+        <TriangleAlert className="size-5 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
         Harm Watch
-        <Eye className="size-5 shrink-0" strokeWidth={2.5} />
+        <Eye className="size-5 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
       </Link>
     </header>
   );

@@ -262,9 +262,9 @@ export function SubmissionForm({ categories, descriptors }: Props) {
             {/* Wordmark */}
             <div className="space-y-1 text-center">
               <h1 className="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
-                <TriangleAlert className="size-8 shrink-0" strokeWidth={2.5} />
+                <TriangleAlert className="size-8 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
                 Harm Watch
-                <Eye className="size-8 shrink-0" strokeWidth={2.5} />
+                <Eye className="size-8 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
               </h1>
               <p className="text-sm text-muted-foreground leading-6">
                 Use Harm Watch to report a website, forum or service you believe
