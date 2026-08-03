@@ -364,7 +364,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                 href="/harm-categories"
                 className="underline underline-offset-2 hover:text-foreground"
               >
-                find out more about the Online Safety Act categories
+                find out more about the OSA23 categories
               </Link>
               .
             </p>
@@ -390,9 +390,9 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               .
             </p>
             <p className="text-xs text-center text-muted-foreground">
-              The Online Safety Act will not stop all harmful content.{" "}
+              OSA23 will not stop all harmful content,{" "}
               <Link href="/support" className="underline underline-offset-2 hover:text-foreground">
-                Click here to read more and find support.
+                click here to read more and find support.
               </Link>
             </p>
             </div>
@@ -454,7 +454,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                   rel="noopener noreferrer"
                   className="underline underline-offset-2 hover:text-foreground"
                 >
-                  find out more about the Online Safety Act categories
+                  find out more about the OSA23 categories
                 </Link>
                 .
               </span>
