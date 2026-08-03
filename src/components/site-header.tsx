@@ -31,7 +31,7 @@ export function SiteFooter() {
           About
         </Link>
         <Link href="/request-access" className="hover:text-foreground underline underline-offset-4">
-          Organisation access
+          Request organisation access
         </Link>
       </div>
     </footer>
