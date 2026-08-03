@@ -21,6 +21,7 @@ export function OrgNav({ isAdmin }: OrgNavProps) {
   const navItems = [
     { href: "/org", label: "Feed" },
     ...(isAdmin ? [{ href: "/org/api-keys", label: "API keys" }] : []),
+    { href: "/org/docs", label: "Documentation" },
   ];
 
   return (
