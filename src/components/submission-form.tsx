@@ -393,6 +393,9 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               What type of content is this?{" "}
               <span aria-hidden className="text-destructive">*</span>
               <span className="block text-sm font-normal text-muted-foreground mt-1 leading-6">
+                Please note submission does not mean removal, it is for reporting and investigation purposes.
+              </span>
+              <span className="block text-sm font-normal text-muted-foreground mt-1 leading-6">
                 Before you submit,{" "}
                 <Link
                   href="/harm-categories"
