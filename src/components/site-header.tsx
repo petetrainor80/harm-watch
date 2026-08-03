@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Info, Eye } from "lucide-react";
+import { TriangleAlert, Eye } from "lucide-react";
 
 export function SiteHeader() {
   return (
@@ -8,7 +8,7 @@ export function SiteHeader() {
         href="/"
         className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5"
       >
-        <Info className="size-5 shrink-0" strokeWidth={2.5} />
+        <TriangleAlert className="size-5 shrink-0" strokeWidth={2.5} />
         Harm Watch
         <Eye className="size-5 shrink-0" strokeWidth={2.5} />
       </Link>

@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
 import Link from "next/link";
-import { Info, Eye } from "lucide-react";
+import { TriangleAlert, Eye } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 const TRACKING_PARAMS = new Set([
@@ -262,7 +262,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
             {/* Wordmark */}
             <div className="space-y-1 text-center">
               <h1 className="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
-                <Info className="size-8 shrink-0" strokeWidth={2.5} />
+                <TriangleAlert className="size-8 shrink-0" strokeWidth={2.5} />
                 Harm Watch
                 <Eye className="size-8 shrink-0" strokeWidth={2.5} />
               </h1>
