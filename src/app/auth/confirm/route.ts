@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
-// Handles invite links and magic links generated via supabase.auth.admin.generateLink().
-// Those links carry a token_hash + type in the query string, not a PKCE code,
-// so the standard /auth/callback cannot process them.
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const token_hash = searchParams.get("token_hash");
@@ -18,19 +17,47 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=missing_code`);
   }
 
-  const supabase = await createClient();
+  const cookieStore = await cookies();
+
+  // Collect cookies that Supabase sets during verifyOtp so we can
+  // attach them to the redirect response. Using cookies().set() alone
+  // doesn't reliably propagate to NextResponse.redirect() responses.
+  const pendingCookies: ResponseCookie[] = [];
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            pendingCookies.push({ name, value, ...options });
+            try {
+              cookieStore.set(name, value, options);
+            } catch {
+              // Server Component context — ignore
+            }
+          });
+        },
+      },
+    }
+  );
+
   const { error } = await supabase.auth.verifyOtp({ type, token_hash });
 
   if (error) {
-    console.error("auth/confirm verifyOtp error", error.code);
+    console.error("auth/confirm verifyOtp error", error.code, error.message);
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
 
-  // Route to the right area based on role.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let dest = "/";
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
@@ -39,14 +66,20 @@ export async function GET(request: Request) {
       .single();
 
     if (profile?.role === "super_admin") {
-      return NextResponse.redirect(`${origin}/admin`);
-    }
-    if (profile?.role === "org_admin" || profile?.role === "org_member") {
-      // First-time invite: send to password setup so they can log in without a magic link next time.
-      const dest = type === "invite" ? "/org/setup" : "/org";
-      return NextResponse.redirect(`${origin}${dest}`);
+      dest = "/admin";
+    } else if (profile?.role === "org_admin" || profile?.role === "org_member") {
+      // First-time invite: send to password setup so they can log in directly next time.
+      dest = type === "invite" ? "/org/setup" : "/org";
     }
   }
 
-  return NextResponse.redirect(`${origin}/`);
+  const response = NextResponse.redirect(`${origin}${dest}`);
+
+  // Write all session cookies onto the redirect response so the browser
+  // receives them and the client-side Supabase client can read the session.
+  pendingCookies.forEach((cookie) => {
+    response.cookies.set(cookie);
+  });
+
+  return response;
 }

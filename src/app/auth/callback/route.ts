@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
+import type { ResponseCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
-// Handles magic-link and invite-link callbacks from Supabase Auth.
-// Supabase redirects here with a `code` param after the user clicks
-// the link in their email.
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
@@ -13,19 +12,43 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=missing_code`);
   }
 
-  const supabase = await createClient();
+  const cookieStore = await cookies();
+  const pendingCookies: ResponseCookie[] = [];
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            pendingCookies.push({ name, value, ...options });
+            try {
+              cookieStore.set(name, value, options);
+            } catch {
+              // Server Component context — ignore
+            }
+          });
+        },
+      },
+    }
+  );
+
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    console.error("auth callback error", error.code);
+    console.error("auth callback error", error.code, error.message);
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
 
-  // Determine where to send them based on their role.
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
+  let dest = next;
   if (user) {
     const { data: profile } = await supabase
       .from("profiles")
@@ -34,12 +57,17 @@ export async function GET(request: Request) {
       .single();
 
     if (profile?.role === "super_admin") {
-      return NextResponse.redirect(`${origin}/admin`);
-    }
-    if (profile?.role === "org_admin" || profile?.role === "org_member") {
-      return NextResponse.redirect(`${origin}/org`);
+      dest = "/admin";
+    } else if (profile?.role === "org_admin" || profile?.role === "org_member") {
+      dest = "/org";
     }
   }
 
-  return NextResponse.redirect(`${origin}${next}`);
+  const response = NextResponse.redirect(`${origin}${dest}`);
+
+  pendingCookies.forEach((cookie) => {
+    response.cookies.set(cookie);
+  });
+
+  return response;
 }

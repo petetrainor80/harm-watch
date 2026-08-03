@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { TriangleAlert, Eye } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface OrgNavProps {
@@ -26,7 +27,14 @@ export function OrgNav({ isAdmin }: OrgNavProps) {
 
   return (
     <nav className="border-b px-6 py-3 flex items-center gap-1 text-sm overflow-x-auto">
-      <span className="font-semibold mr-4 shrink-0">Portal</span>
+      <Link
+        href="/org"
+        className="font-bold tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1 mr-4 shrink-0"
+      >
+        <TriangleAlert className="size-4 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
+        <span className="text-sm">Harm Watch</span>
+        <Eye className="size-4 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
+      </Link>
       {navItems.map(({ href, label }) => {
         const active =
           href === "/org" ? pathname === "/org" : pathname.startsWith(href);

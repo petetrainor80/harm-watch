@@ -34,10 +34,18 @@ export default function OrgSetupPage() {
 
     setLoading(true);
     const supabase = createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setError("Your session has expired. Please follow the invite link from your email again.");
+      setLoading(false);
+      return;
+    }
+
     const { error: updateErr } = await supabase.auth.updateUser({ password });
 
     if (updateErr) {
-      setError("Could not set your password. Please try again.");
+      setError(`Could not set your password: ${updateErr.message}`);
       setLoading(false);
       return;
     }
