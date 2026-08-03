@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
 import Link from "next/link";
-import { TriangleAlert, Eye, ArrowRightToLine } from "lucide-react";
+import { TriangleAlert, Eye, ArrowRightToLine, CircleAlert } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 const TRACKING_PARAMS = new Set([
@@ -302,7 +302,8 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                   aria-describedby={urlError ? "landing-url-error" : undefined}
                 />
                 {urlError && (
-                  <p id="landing-url-error" className="text-sm text-destructive" role="alert">
+                  <p id="landing-url-error" className="flex items-center gap-1.5 text-sm font-bold text-destructive" role="alert">
+                    <CircleAlert className="size-4 shrink-0" />
                     {urlError}
                   </p>
                 )}
