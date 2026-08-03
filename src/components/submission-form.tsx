@@ -314,6 +314,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               </Button>
             </form>
 
+            <div className="space-y-1">
             <p className="text-xs text-center text-muted-foreground">
               Before you submit,{" "}
               <Link
@@ -345,6 +346,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               </a>
               .
             </p>
+            </div>
           </div>
         </div>
         <SiteFooter />
