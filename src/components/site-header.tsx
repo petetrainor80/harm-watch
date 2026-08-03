@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Script from "next/script";
 import { TriangleAlert, Eye } from "lucide-react";
 
 export function SiteHeader() {
@@ -18,7 +19,18 @@ export function SiteHeader() {
 
 export function SiteFooter() {
   return (
-    <footer className="border-t px-6 py-6 mt-auto shrink-0">
+    <>
+      <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-EXRFB28QNX"
+        strategy="afterInteractive"
+      />
+      <Script id="ga-init" strategy="afterInteractive">{`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-EXRFB28QNX');
+      `}</Script>
+      <footer className="border-t px-6 py-6 mt-auto shrink-0">
       <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-muted-foreground text-center">
         <span>© 2026 Harm Watch</span>
         <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">
@@ -35,5 +47,6 @@ export function SiteFooter() {
         </Link>
       </div>
     </footer>
+    </>
   );
 }
