@@ -34,6 +34,21 @@ export function LoginForm({ next }: Props) {
       return;
     }
 
+    // Redirect based on role so org users don't get bounced from /admin.
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.role === "org_admin" || profile?.role === "org_member") {
+        window.location.href = "/org";
+        return;
+      }
+    }
+
     window.location.href = next ?? "/admin";
   };
 
