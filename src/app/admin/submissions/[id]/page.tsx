@@ -6,6 +6,8 @@ import { StatusForm } from "@/components/admin/status-form";
 import { AdminNotesForm } from "@/components/admin/admin-notes-form";
 import { CopyButton } from "@/components/admin/copy-button";
 import { DeleteSubmissionButton } from "@/components/admin/delete-submission-button";
+import { DomainLookupPanel } from "@/components/admin/domain-lookup-panel";
+import { ManageTagsForm } from "@/components/admin/manage-tags-form";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -42,6 +44,13 @@ export default async function SubmissionDetailPage({ params }: PageProps) {
   const descriptors = tags.filter((t) => t.tags?.kind === "descriptor");
   const reports = (submission.reports as unknown as ReportRow[]) ?? [];
   const defanged = defangUrl(submission.url_normalised);
+
+  const { data: availableTags } = await supabase
+    .from("tags")
+    .select("slug, label")
+    .eq("kind", "category")
+    .eq("is_blocked", false)
+    .order("label");
 
   const { data: auditEntries } = await supabase
     .from("audit_log")
@@ -104,10 +113,7 @@ export default async function SubmissionDetailPage({ params }: PageProps) {
               <p className="text-xs text-muted-foreground">Categories</p>
               <div className="flex flex-wrap gap-2">
                 {categories.map((t) => (
-                  <span
-                    key={t.tags!.slug}
-                    className="text-xs bg-secondary px-2 py-0.5 rounded-full"
-                  >
+                  <span key={t.tags!.slug} className="text-xs bg-secondary px-2 py-0.5 rounded-full">
                     {t.tags!.label}{" "}
                     <span className="text-muted-foreground">({t.report_count})</span>
                   </span>
@@ -115,6 +121,7 @@ export default async function SubmissionDetailPage({ params }: PageProps) {
               </div>
             </div>
           )}
+          {descriptors.length === 0 && categories.length === 0 && null}
 
           {descriptors.length > 0 && (
             <div className="space-y-1">
@@ -140,6 +147,18 @@ export default async function SubmissionDetailPage({ params }: PageProps) {
           )}
         </div>
       </section>
+
+      <ManageTagsForm
+        submissionId={id}
+        currentCategories={categories.map(t => ({
+          slug: t.tags!.slug,
+          label: t.tags!.label,
+          report_count: t.report_count,
+        }))}
+        availableCategories={availableTags ?? []}
+      />
+
+      <DomainLookupPanel submissionId={id} />
 
       <section className="space-y-4">
         <h2 className="text-base font-medium">Change status</h2>

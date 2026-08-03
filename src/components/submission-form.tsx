@@ -352,7 +352,7 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                 )}
               </div>
               <Button type="submit" size="lg" className="w-full text-base h-12 gap-2">
-                Continue
+                Report it
                 <ArrowRightToLine className="size-5 shrink-0" />
               </Button>
             </form>
