@@ -5,6 +5,7 @@ import Link from "next/link";
 import { StatusForm } from "@/components/admin/status-form";
 import { AdminNotesForm } from "@/components/admin/admin-notes-form";
 import { CopyButton } from "@/components/admin/copy-button";
+import { DeleteSubmissionButton } from "@/components/admin/delete-submission-button";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -215,6 +216,15 @@ export default async function SubmissionDetailPage({ params }: PageProps) {
           </div>
         </section>
       )}
+      <section className="space-y-4 border-t pt-8">
+        <div className="space-y-1">
+          <h2 className="text-base font-medium text-destructive">Danger zone</h2>
+          <p className="text-sm text-muted-foreground">
+            Permanently removes this submission and all associated reports from the database.
+          </p>
+        </div>
+        <DeleteSubmissionButton submissionId={id} defangedUrl={defanged} />
+      </section>
     </div>
   );
 }
