@@ -20,9 +20,10 @@ export default function TermsPage() {
             not, please do not use it.
           </p>
           <p className="text-base leading-7">
-            The service is operated by [LEGAL ENTITY], registered in England and Wales, company number [COMPANY
-            NUMBER], registered office [REGISTERED ADDRESS]. In these terms, &ldquo;we&rdquo; and &ldquo;us&rdquo;
-            mean that company, and &ldquo;you&rdquo; means whoever is using the service.
+            The service is operated by volunteers and submissions are passed to governing bodies once verified.
+            The creator, Pete Trainor, oversees its operation. In these terms, &ldquo;we&rdquo; and
+            &ldquo;us&rdquo; mean The Harm Watch and its volunteers, and &ldquo;you&rdquo; means whoever is
+            using the service.
           </p>
 
           <Section num="1" title="What The Harm Watch is">
