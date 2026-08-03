@@ -387,6 +387,12 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               </a>
               .
             </p>
+            <p className="text-xs text-center text-muted-foreground">
+              The Online Safety Act is not going to stop all harmful content.{" "}
+              <Link href="/support" className="underline underline-offset-2 hover:text-foreground">
+                Click here to read more and find support.
+              </Link>
+            </p>
             </div>
           </div>
         </div>
