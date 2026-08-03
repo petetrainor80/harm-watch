@@ -268,7 +268,16 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               </h1>
               <p className="text-sm text-muted-foreground leading-6">
                 Use Harm Watch to report a website, forum or service you believe
-                breaches the Online Safety Act 2023. Reports are securely logged
+                breaches the{" "}
+                <a
+                  href="https://www.legislation.gov.uk/ukpga/2023/50"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-4 hover:text-foreground"
+                >
+                  Online Safety Act 2023
+                </a>
+                . Reports are securely logged
                 and made available to approved organisations. Do not use this
                 form to report an emergency — call 999.
               </p>
