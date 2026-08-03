@@ -15,9 +15,34 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Harm Watch",
+  metadataBase: new URL("https://www.harm.watch"),
+  title: {
+    default: "Harm Watch",
+    template: "%s | Harm Watch",
+  },
   description:
-    "Report a website, forum or service you believe breaches the Online Safety Act 2023.",
+    "Report a website, forum or service you believe breaches the Online Safety Act 2023. Submissions are securely logged and shared with approved organisations.",
+  keywords: [
+    "Online Safety Act",
+    "report harmful website UK",
+    "online harm reporting",
+    "Ofcom",
+    "illegal content UK",
+    "website report UK",
+    "online safety reporting",
+  ],
+  openGraph: {
+    siteName: "Harm Watch",
+    locale: "en_GB",
+    type: "website",
+  },
+  twitter: {
+    card: "summary",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({

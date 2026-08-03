@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
-export const metadata = { title: "About — The Harm Watch" };
+export const metadata = {
+  title: "About",
+  description:
+    "Harm Watch is an independent reporting service for websites that may breach the Online Safety Act 2023. Find out what we do, who we share data with, and what we deliberately do not do.",
+  openGraph: {
+    title: "About Harm Watch",
+    description:
+      "An independent reporting service for websites that may breach the Online Safety Act 2023. Find out what we do and what we deliberately do not do.",
+    url: "https://www.harm.watch/about",
+  },
+};
 
 export default function AboutPage() {
   return (

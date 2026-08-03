@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
-export const metadata = { title: "API documentation — The Harm Watch" };
+export const metadata = {
+  title: "API Documentation",
+  description:
+    "Technical reference for the Harm Watch read-only JSON API. Bearer token authentication, keyset pagination, structured submission records, and rate limit headers.",
+  openGraph: {
+    title: "API Documentation | Harm Watch",
+    description:
+      "Technical reference for the Harm Watch read-only JSON API — auth, endpoints, pagination and rate limits.",
+    url: "https://www.harm.watch/docs/api",
+  },
+};
 
 const BASE = "https://www.harm.watch/api/v1";
 

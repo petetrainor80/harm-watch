@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { LoginForm } from "@/components/login-form";
 import { SiteHeader } from "@/components/site-header";
+
+export const metadata: Metadata = {
+  title: "Sign In",
+  robots: { index: false, follow: false },
+};
 
 interface Props {
   searchParams: Promise<{ next?: string; error?: string }>;

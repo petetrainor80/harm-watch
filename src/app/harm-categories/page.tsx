@@ -2,9 +2,23 @@ import { SiteHeader, SiteFooter } from "@/components/site-header";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Harm Categories — Harm Watch",
+  title: "Harm Categories & Ofcom Taxonomy",
   description:
-    "How Harm Watch classifies online harm: the public reporting categories, the Ofcom illegal harm taxonomy under the Online Safety Act 2023, and how the two map to each other.",
+    "The twelve public reporting categories used by Harm Watch, mapped to Ofcom's seventeen kinds of priority illegal harm under the Online Safety Act 2023, plus content harmful to children.",
+  keywords: [
+    "Ofcom harm taxonomy",
+    "Online Safety Act categories",
+    "priority illegal harm",
+    "online harm categories UK",
+    "CSEA reporting",
+    "online safety categories",
+  ],
+  openGraph: {
+    title: "Harm Categories & Ofcom Taxonomy | Harm Watch",
+    description:
+      "The twelve public reporting categories used by Harm Watch, mapped to Ofcom's seventeen kinds of priority illegal harm under the Online Safety Act 2023.",
+    url: "https://www.harm.watch/harm-categories",
+  },
 };
 
 // ── Data ─────────────────────────────────────────────────────────────────────

@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
-export const metadata = { title: "Terms of use — The Harm Watch" };
+export const metadata = {
+  title: "Terms of Use",
+  description:
+    "The terms governing use of Harm Watch — the public reporting form, organisation portal and API. Covers reporter obligations, organisation access rules, liability and governing law.",
+  openGraph: {
+    title: "Terms of Use | Harm Watch",
+    description:
+      "The terms governing use of Harm Watch — reporter obligations, organisation access rules, liability and governing law.",
+    url: "https://www.harm.watch/terms",
+  },
+};
 
 export default function TermsPage() {
   return (

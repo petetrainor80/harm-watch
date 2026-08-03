@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import { SubmissionForm } from "@/components/submission-form";
 import { createServiceClient } from "@/lib/supabase/service";
+
+export const metadata: Metadata = {
+  title: "Report a Harmful Website",
+  description:
+    "Use Harm Watch to report a website, forum or service that breaches the Online Safety Act 2023. Free, anonymous, and takes under a minute.",
+  openGraph: {
+    title: "Report a Harmful Website | Harm Watch",
+    description:
+      "Use Harm Watch to report a website, forum or service that breaches the Online Safety Act 2023. Free, anonymous, and takes under a minute.",
+    url: "https://www.harm.watch",
+  },
+};
 
 export const dynamic = "force-dynamic";
 

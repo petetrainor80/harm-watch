@@ -1,7 +1,17 @@
 import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
-export const metadata = { title: "Privacy notice — The Harm Watch" };
+export const metadata = {
+  title: "Privacy Notice",
+  description:
+    "How Harm Watch collects, uses and retains personal data, your rights under UK GDPR, and our legal basis for processing.",
+  openGraph: {
+    title: "Privacy Notice | Harm Watch",
+    description:
+      "How Harm Watch collects, uses and retains personal data, your rights under UK GDPR, and our legal basis for processing.",
+    url: "https://www.harm.watch/privacy",
+  },
+};
 
 export default function PrivacyPage() {
   return (

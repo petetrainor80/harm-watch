@@ -1,5 +1,18 @@
+import type { Metadata } from "next";
 import { OrgRegistrationForm } from "@/components/org-registration-form";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
+
+export const metadata: Metadata = {
+  title: "Request Organisation Access",
+  description:
+    "Apply for access to the Harm Watch submissions feed. Available to approved charities, regulators, ISPs, legal teams and online safety organisations.",
+  openGraph: {
+    title: "Request Organisation Access | Harm Watch",
+    description:
+      "Apply for access to the Harm Watch submissions feed. Available to approved charities, regulators, ISPs and legal teams.",
+    url: "https://www.harm.watch/request-access",
+  },
+};
 
 export default function RequestAccessPage() {
   return (

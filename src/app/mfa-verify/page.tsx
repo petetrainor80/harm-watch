@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { MfaVerifyForm } from "@/components/mfa-verify-form";
 import { SiteHeader } from "@/components/site-header";
+
+export const metadata: Metadata = {
+  title: "Two-Factor Authentication",
+  robots: { index: false, follow: false },
+};
 
 export default function MfaVerifyPage() {
   return (

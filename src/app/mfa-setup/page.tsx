@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import { MfaSetupForm } from "@/components/mfa-setup-form";
 import { SiteHeader } from "@/components/site-header";
+
+export const metadata: Metadata = {
+  title: "Set Up Two-Factor Authentication",
+  robots: { index: false, follow: false },
+};
 
 export default function MfaSetupPage() {
   return (
