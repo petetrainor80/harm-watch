@@ -10,8 +10,8 @@ const CSP = [
   // Cloudflare Turnstile injects its widget script from challenges.cloudflare.com.
   // PRD-Q: implement per-request nonces via proxy.ts to tighten this.
   `script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com${isDev ? " 'unsafe-eval'" : ""}`,
-  // Tailwind v4 generates a static CSS file in production; no inline styles needed.
-  "style-src 'self'",
+  // 'unsafe-inline' required for dynamic inline styles (e.g. chart bar widths).
+  "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self'",
   // Supabase Auth and Realtime connections.

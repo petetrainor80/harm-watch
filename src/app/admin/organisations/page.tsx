@@ -55,11 +55,11 @@ export default async function OrganisationsPage() {
                   <h2 className="font-medium">{org.name}</h2>
                   <p className="text-sm text-muted-foreground">
                     {org.contact_name} &middot; {org.contact_email}
-                    {org.contact_job_title && ` &middot; ${org.contact_job_title}`}
+                    {org.contact_job_title && ` · ${org.contact_job_title}`}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {org.website}
-                    {org.type && ` &middot; ${TYPE_LABELS[org.type] ?? org.type}`}
+                    {org.type && ` · ${TYPE_LABELS[org.type] ?? org.type}`}
                   </p>
                 </div>
                 <span className="text-xs text-muted-foreground whitespace-nowrap">
