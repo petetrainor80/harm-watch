@@ -22,10 +22,9 @@ export default function PrivacyPage() {
 
           <Section title="Who we are">
             <p>
-              The Harm Watch is operated by [LEGAL ENTITY], registered in England and Wales, company number
-              [COMPANY NUMBER], registered office [REGISTERED ADDRESS]. We are the data controller for the
-              personal data described here, and we are registered with the Information Commissioner&apos;s Office
-              under registration number [ICO NUMBER].
+              The Harm Watch is operated by volunteers and submissions are passed to governing bodies once
+              verified. The creator, Pete Trainor, is the data controller for the personal data described
+              here. Please note the service is not registered with the Information Commissioner&apos;s Office.
             </p>
             <p>
               Data protection enquiries:{" "}
@@ -53,7 +52,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="What we collect when you report a website">
-            <ul className="list-disc list-inside space-y-3 text-muted-foreground">
+            <ul className="list-disc list-outside pl-5 space-y-3 text-muted-foreground">
               <li>
                 <strong className="text-foreground">The report itself.</strong> The web address you submit, the
                 harm categories and descriptors you select, any tag you suggest, and any free text you add in the
@@ -123,7 +122,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="Why we are allowed to process this, in legal terms">
-            <ul className="list-disc list-inside space-y-3 text-muted-foreground">
+            <ul className="list-disc list-outside pl-5 space-y-3 text-muted-foreground">
               <li>
                 <strong className="text-foreground">Legitimate interests</strong>, for operating the reporting
                 service, deduplicating and classifying reports, protecting the service from abuse, and sharing
@@ -146,7 +145,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="Who we share it with">
-            <ul className="list-disc list-inside space-y-3 text-muted-foreground">
+            <ul className="list-disc list-outside pl-5 space-y-3 text-muted-foreground">
               <li>
                 <strong className="text-foreground">Approved organisations.</strong> They receive the submission
                 record: the web address, its domain, its status, its categories and descriptors, the number of
@@ -176,7 +175,7 @@ export default function PrivacyPage() {
           </Section>
 
           <Section title="How long we keep things">
-            <ul className="list-disc list-inside space-y-3 text-muted-foreground">
+            <ul className="list-disc list-outside pl-5 space-y-3 text-muted-foreground">
               <li>
                 <strong className="text-foreground">Submission records</strong> are kept indefinitely. The
                 historical record of what was reported, when, and how often is the substance of the service.
