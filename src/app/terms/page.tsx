@@ -39,7 +39,7 @@ export default function TermsPage() {
 
           <Section num="2" title="What The Harm Watch is not">
             <p>Please read this section properly, because it is the part people most often assume the opposite of.</p>
-            <ul className="list-disc list-inside space-y-3 text-muted-foreground">
+            <ul className="list-disc list-outside pl-5 space-y-3 text-muted-foreground">
               <li>
                 <strong className="text-foreground">We do not verify reports.</strong> A record in our database
                 means somebody told us about a website. It does not mean the website is unlawful, harmful, or in
@@ -245,7 +245,7 @@ export default function TermsPage() {
           </Section>
 
           <Section num="13" title="Contact">
-            <ul className="space-y-1.5 text-sm">
+            <ul className="list-disc list-outside pl-5 space-y-1.5 text-sm">
               <li><a href="mailto:hello@harm.watch" className="underline underline-offset-4 hover:text-foreground">hello@harm.watch</a> — general enquiries</li>
               <li><a href="mailto:access@harm.watch" className="underline underline-offset-4 hover:text-foreground">access@harm.watch</a> — organisation access</li>
               <li><a href="mailto:privacy@harm.watch" className="underline underline-offset-4 hover:text-foreground">privacy@harm.watch</a> — data protection</li>
