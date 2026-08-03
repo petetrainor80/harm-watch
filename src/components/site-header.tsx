@@ -30,7 +30,7 @@ export function SiteFooter() {
         gtag('js', new Date());
         gtag('config', 'G-EXRFB28QNX');
       `}</Script>
-      <footer className="border-t px-6 py-6 mt-auto shrink-0">
+      <footer className="border-t px-6 py-6 mt-auto shrink-0 sticky bottom-[10px] bg-background z-40">
       <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-muted-foreground text-center">
         <span>© 2026 Harm Watch</span>
         <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">
