@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { TriangleAlert, Eye } from "lucide-react";
+import { TriangleAlert, Eye, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface OrgNavProps {
@@ -54,8 +54,9 @@ export function OrgNav({ isAdmin }: OrgNavProps) {
       })}
       <button
         onClick={handleSignOut}
-        className="ml-auto shrink-0 px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap"
+        className="ml-auto shrink-0 px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap inline-flex items-center gap-1.5"
       >
+        <LogOut className="size-3.5" />
         Sign out
       </button>
     </nav>

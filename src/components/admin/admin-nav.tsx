@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { TriangleAlert, Eye, LogOut } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
@@ -25,7 +26,13 @@ export function AdminNav() {
 
   return (
     <nav className="border-b px-6 py-3 flex items-center gap-1 text-sm overflow-x-auto">
-      <span className="font-semibold mr-4 shrink-0">Admin</span>
+      <Link href="/" className="inline-flex items-center gap-1.5 font-bold tracking-tight mr-4 shrink-0">
+        <TriangleAlert className="size-4 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
+        <span className="bg-gradient-to-r from-foreground to-[#1d70b8] bg-clip-text text-transparent">
+          Harm Watch
+        </span>
+        <Eye className="size-4 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
+      </Link>
       {NAV_ITEMS.map(({ href, label }) => {
         const active =
           href === "/admin"
@@ -47,8 +54,9 @@ export function AdminNav() {
       })}
       <button
         onClick={handleSignOut}
-        className="ml-auto shrink-0 px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap"
+        className="ml-auto shrink-0 px-3 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap inline-flex items-center gap-1.5"
       >
+        <LogOut className="size-3.5" />
         Sign out
       </button>
     </nav>
