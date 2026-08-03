@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { BlockedCategoryInterstitial } from "@/components/blocked-category-interstitial";
 import Link from "next/link";
-import { TriangleAlert, Eye } from "lucide-react";
+import { TriangleAlert, Eye, ArrowRightToLine } from "lucide-react";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 const TRACKING_PARAMS = new Set([
@@ -307,8 +307,9 @@ export function SubmissionForm({ categories, descriptors }: Props) {
                   </p>
                 )}
               </div>
-              <Button type="submit" size="lg" className="w-full text-base h-12">
+              <Button type="submit" size="lg" className="w-full text-base h-12 gap-2">
                 Continue
+                <ArrowRightToLine className="size-5 shrink-0" />
               </Button>
             </form>
 
