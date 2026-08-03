@@ -91,10 +91,12 @@ export function SubmissionForm({ categories, descriptors }: Props) {
 
   useEffect(() => {
     const trimmed = url.trim();
-    if (!trimmed) { setCheckStatus(null); return; }
-
     let cancelled = false;
     const timer = setTimeout(async () => {
+      if (!trimmed) {
+        if (!cancelled) setCheckStatus(null);
+        return;
+      }
       const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
       try { new URL(withScheme); } catch { return; }
 
@@ -103,12 +105,12 @@ export function SubmissionForm({ categories, descriptors }: Props) {
         const res = await fetch(`/api/submissions/check?url=${encodeURIComponent(withScheme)}`);
         if (!cancelled && res.ok) {
           const data = await res.json();
-          setCheckStatus({ count: data.count });
+          if (!cancelled) setCheckStatus({ count: data.count });
         }
       } catch {
         if (!cancelled) setCheckStatus(null);
       }
-    }, 400);
+    }, trimmed ? 400 : 0);
 
     return () => { cancelled = true; clearTimeout(timer); };
   }, [url]);

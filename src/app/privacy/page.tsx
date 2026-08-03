@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { SiteHeader, SiteFooter } from "@/components/site-header";
 
 export const metadata = {
