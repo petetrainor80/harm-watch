@@ -10,7 +10,9 @@ export function SiteHeader() {
         className="font-bold text-lg tracking-tight hover:text-primary transition-colors inline-flex items-center gap-1.5"
       >
         <TriangleAlert className="size-5 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
-        Harm Watch
+        <span className="bg-gradient-to-r from-foreground to-[#1d70b8] bg-clip-text text-transparent">
+          Harm Watch
+        </span>
         <Eye className="size-5 shrink-0 text-[#1d70b8]" strokeWidth={2.5} />
       </Link>
     </header>
