@@ -393,6 +393,18 @@ export function SubmissionForm({ categories, descriptors }: Props) {
               What type of content is this?{" "}
               <span aria-hidden className="text-destructive">*</span>
               <span className="block text-sm font-normal text-muted-foreground mt-1 leading-6">
+                Before you submit,{" "}
+                <Link
+                  href="/harm-categories"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline underline-offset-2 hover:text-foreground"
+                >
+                  find out more about the Online Safety Act categories
+                </Link>
+                .
+              </span>
+              <span className="block text-sm font-normal text-muted-foreground mt-1 leading-6">
                 Select all that apply. For a specific crime,{" "}
                 <a
                   href="https://www.police.uk/pu/contact-the-police/report-a-crime-incident/"
