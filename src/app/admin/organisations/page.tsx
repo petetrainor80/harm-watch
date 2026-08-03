@@ -84,18 +84,23 @@ export default async function OrganisationsPage() {
           {others?.map((org) => (
             <div key={org.id} className="px-4 py-3 flex items-center justify-between gap-4 text-sm">
               <span className="font-medium">{org.name}</span>
-              <span className="text-muted-foreground">
-                {org.contact_email}
-              </span>
-              <span className={
-                org.status === "approved"
-                  ? "text-green-700"
-                  : org.status === "rejected"
-                  ? "text-destructive"
-                  : "text-muted-foreground"
-              }>
-                {STATUS_LABELS[org.status] ?? org.status}
-              </span>
+              <span className="text-muted-foreground">{org.contact_email}</span>
+              <div className="flex items-center gap-3">
+                <span className={
+                  org.status === "approved"
+                    ? "text-green-700"
+                    : org.status === "rejected"
+                    ? "text-destructive"
+                    : org.status === "suspended"
+                    ? "text-amber-700"
+                    : "text-muted-foreground"
+                }>
+                  {STATUS_LABELS[org.status] ?? org.status}
+                </span>
+                {(org.status === "approved" || org.status === "suspended") && (
+                  <SuspendReinstateButton orgId={org.id} currentStatus={org.status} />
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -104,5 +109,6 @@ export default async function OrganisationsPage() {
   );
 }
 
-// Client component for the approve/reject form buttons
+// Client components
 import { ApproveRejectButtons } from "@/components/approve-reject-buttons";
+import { SuspendReinstateButton } from "@/components/suspend-reinstate-button";
