@@ -315,6 +315,16 @@ export function SubmissionForm({ categories, descriptors }: Props) {
             </form>
 
             <p className="text-xs text-center text-muted-foreground">
+              Before you submit,{" "}
+              <Link
+                href="/harm-categories"
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                find out more about the Online Safety Act categories
+              </Link>
+              .
+            </p>
+            <p className="text-xs text-center text-muted-foreground">
               If you are reporting a specific crime,{" "}
               <a
                 href="https://www.police.uk/pu/contact-the-police/report-a-crime-incident/"
