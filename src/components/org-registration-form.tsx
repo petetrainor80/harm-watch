@@ -78,7 +78,7 @@ export function OrgRegistrationForm() {
   if (submitted) {
     return (
       <div className="space-y-4">
-        <p className="text-base leading-7">
+        <p className="text-base font-semibold text-green-600 dark:text-green-400">
           Thank you. We have received your request and will review it within a few
           working days.
         </p>
