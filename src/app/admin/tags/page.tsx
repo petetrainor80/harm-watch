@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { SuggestionActions } from "@/components/admin/suggestion-actions";
+import { SortableCategoryList } from "@/components/admin/sortable-category-list";
 
 export default async function TagsPage() {
   const supabase = await createClient();
@@ -59,8 +60,11 @@ export default async function TagsPage() {
       )}
 
       <section className="space-y-4">
-        <h2 className="text-base font-medium">Categories</h2>
-        <TaxonomyTable tags={categories} />
+        <div className="flex items-center justify-between gap-4">
+          <h2 className="text-base font-medium">Categories</h2>
+          <p className="text-xs text-muted-foreground">Drag to reorder — order is reflected on the public form.</p>
+        </div>
+        <SortableCategoryList initialTags={categories} />
       </section>
 
       <section className="space-y-4">

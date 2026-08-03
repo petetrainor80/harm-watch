@@ -12,6 +12,7 @@ async function getTags() {
     .from("tags")
     .select("slug, label, kind, is_blocked, redirect_url, redirect_copy")
     .eq("is_active", true)
+    .order("sort_order", { ascending: true, nullsFirst: false })
     .order("label");
 
   if (error || !data) return { categories: [], descriptors: [] };
