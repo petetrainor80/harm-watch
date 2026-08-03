@@ -20,7 +20,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t px-6 py-6 mt-auto shrink-0">
       <div className="max-w-2xl mx-auto flex flex-wrap justify-center gap-x-6 gap-y-1 text-xs text-muted-foreground text-center">
-        <span>© Harm Watch</span>
+        <span>© 2026 Harm Watch</span>
         <Link href="/privacy" className="hover:text-foreground underline underline-offset-4">
           Privacy notice
         </Link>
