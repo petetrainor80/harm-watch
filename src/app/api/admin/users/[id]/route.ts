@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const schema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("set_active"), is_active: z.boolean() }),
-  z.object({ action: z.literal("set_role"), role: z.enum(["org_admin", "org_member"]) }),
+  z.object({ action: z.literal("set_role"), role: z.enum(["org_admin", "org_member", "super_admin"]) }),
   z.object({ action: z.literal("resend_invite") }),
 ]);
 
